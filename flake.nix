@@ -25,7 +25,8 @@
           ```
         '';
         inventory = output: mkChildren (builtins.mapAttrs (schemaName: schemaDef:
-          { doc = "A schema checker for the `${schemaName}` flake output.";
+          mkLeaf {
+            doc = "A schema checker for the `${schemaName}` flake output.";
             evalChecks.isValidSchema =
               schemaDef.version or 0 == 1
               && schemaDef ? doc
@@ -229,6 +230,7 @@
         inventory = inventoryFor (x: true);
 
         contents = {
+          version = 1;
           inherit docs;
           inherit inventory;
         };
