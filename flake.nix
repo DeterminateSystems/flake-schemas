@@ -47,7 +47,8 @@
       legacyPackagesSchema = {
         version = 1;
         doc = ''
-          The `legacyPackages` flake output *bla bla...*
+          The `legacyPackages` flake output is similar to `packages`, but it can be nested (i.e. contain attribute sets that contain more packages).
+          Since enumerating the packages in nested attribute sets is inefficient, `legacyPackages` should be avoided in favor of `packages`.
         '';
         inventory = output:
           mkChildren (builtins.mapAttrs (systemType: packagesForSystem:
