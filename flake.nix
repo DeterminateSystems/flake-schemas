@@ -182,59 +182,5 @@
       schemas.devShells = devShellsSchema;
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
-
-      # FIXME: remove?
-      lib.evalFlake = flake: rec {
-
-        allSchemas = flake.outputs.schemas or self.schemas;
-
-        schemas =
-          builtins.listToAttrs (builtins.concatLists (mapAttrsToList (outputName: output:
-            if allSchemas ? ${outputName} then
-              [ { name = outputName; value = allSchemas.${outputName}; }]
-            else
-              [ ])
-            flake.outputs));
-
-        docs =
-          builtins.mapAttrs (outputName: schema: schema.doc or "<no docs>") schemas;
-
-        uncheckedOutputs =
-          builtins.filter (outputName: ! schemas ? ${outputName}) (builtins.attrNames flake.outputs);
-
-        inventoryFor = filterFun:
-          builtins.mapAttrs (outputName: schema:
-            let
-              doFilter = attrs:
-                if filterFun attrs
-                then
-                  if attrs ? children
-                  then
-                    mkChildren (builtins.mapAttrs (childName: child: doFilter child) attrs.children)
-                  else if attrs ? leaf then
-                    mkLeaf {
-                      forSystems = attrs.leaf.forSystems or null;
-                      doc = if attrs.leaf ? doc then try attrs.leaf.doc "«evaluation error»" else null;
-                      #evalChecks = attrs.leaf.evalChecks or {};
-                    }
-                  else
-                    throw "Schema returned invalid tree node."
-                else
-                  {};
-            in doFilter ((schema.inventory or (output: {})) flake.outputs.${outputName})
-          ) schemas;
-
-        inventoryForSystem = system: inventoryFor (itemSet:
-          !itemSet ? forSystems
-          || builtins.any (x: x == system) itemSet.forSystems);
-
-        inventory = inventoryFor (x: true);
-
-        contents = {
-          version = 1;
-          inherit docs;
-          inherit inventory;
-        };
-      };
     };
 }
