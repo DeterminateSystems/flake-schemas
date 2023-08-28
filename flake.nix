@@ -65,6 +65,7 @@
                               doc = attrs.meta.description or null;
                               #derivations = attrs;
                               evalChecks.isDerivation = checkDerivation attrs;
+                              what = "package '${attrs.name}'";
                             };
                           }
                         ]
@@ -167,6 +168,7 @@
                 doc = package.meta.description or null;
                 derivation = if isCheck then package else null;
                 evalChecks.isDerivation = checkDerivation package;
+                what = "package '${package.name}'";
               }) packagesForSystem;
           })
           output);
