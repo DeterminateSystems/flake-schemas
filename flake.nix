@@ -63,7 +63,7 @@
                             value = mkLeaf {
                               forSystems = [ attrs.system ];
                               doc = attrs.meta.description or null;
-                              #derivations = [ attrs ];
+                              #derivations = attrs;
                               evalChecks.isDerivation = checkDerivation attrs;
                             };
                           }
@@ -118,7 +118,7 @@
                 mkLeaf {
                   forSystems = [ attrs.system ];
                   doc = attrs.meta.description or null;
-                  #derivations = [ attrs ];
+                  derivation = attrs;
                   evalChecks.isDerivation = checkDerivation attrs;
                 }
               else
@@ -165,7 +165,7 @@
               mkLeaf {
                 forSystems = [ systemType ];
                 doc = package.meta.description or null;
-                derivations = if isCheck then [ package ] else [ ];
+                derivation = if isCheck then package else null;
                 evalChecks.isDerivation = checkDerivation package;
               }) packagesForSystem;
           })
