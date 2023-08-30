@@ -26,7 +26,7 @@
         '';
         inventory = output: mkChildren (builtins.mapAttrs (schemaName: schemaDef:
           {
-            doc = "A schema checker for the `${schemaName}` flake output.";
+            shortDescription = "A schema checker for the `${schemaName}` flake output";
             evalChecks.isValidSchema =
               schemaDef.version or 0 == 1
               && schemaDef ? doc
@@ -139,7 +139,6 @@
           The `overlays` flake output defines "overlays" that can be plugged into Nixpkgs.
           Overlays add additional packages or modify or replace existing packages.
         '';
-        allowIFD = false;
         inventory = output: mkChildren (builtins.mapAttrs (overlayName: overlay:
           {
             what = "Nixpkgs overlay";
