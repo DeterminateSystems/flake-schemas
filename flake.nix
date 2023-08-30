@@ -151,6 +151,18 @@
           }) output);
       };
 
+      nixosConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `nixosConfigurations` flake output defines NixOS system configurations.
+        '';
+        inventory = output: mkChildren (builtins.mapAttrs (configName: machine:
+          {
+            what = "NixOS configuration";
+            derivation = machine.config.system.build.toplevel;
+          }) output);
+      };
+
       # Helper functions.
 
       try = e: default:
@@ -186,5 +198,6 @@
       schemas.devShells = devShellsSchema;
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
+      schemas.nixosConfigurations = nixosConfigurationsSchema;
     };
 }
