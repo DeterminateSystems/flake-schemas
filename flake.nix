@@ -160,7 +160,7 @@
 
       mkChildren = children: { inherit children; };
 
-      derivationsInventory = what: isCheck: output: mkChildren (
+      derivationsInventory = what: isFlakeCheck: output: mkChildren (
         builtins.mapAttrs (systemType: packagesForSystem:
           {
             forSystems = [ systemType ];
@@ -171,6 +171,7 @@
                 derivation = package;
                 evalChecks.isDerivation = checkDerivation package;
                 inherit what;
+                isFlakeCheck = isFlakeCheck;
               }) packagesForSystem;
           })
           output);
