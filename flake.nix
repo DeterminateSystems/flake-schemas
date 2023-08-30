@@ -25,7 +25,7 @@
           ```
         '';
         inventory = output: mkChildren (builtins.mapAttrs (schemaName: schemaDef:
-          mkLeaf {
+          {
             doc = "A schema checker for the `${schemaName}` flake output.";
             evalChecks.isValidSchema =
               schemaDef.version or 0 == 1
@@ -61,9 +61,9 @@
                     try (
                       if attrs.type or null == "derivation" then
                         [ { name = attrName;
-                            value = mkLeaf {
+                            value = {
                               forSystems = [ attrs.system ];
-                              doc = attrs.meta.description or null;
+                              shortDescription = attrs.meta.description or "";
                               #derivations = attrs;
                               evalChecks.isDerivation = checkDerivation attrs;
                               what = "package";
@@ -117,9 +117,9 @@
           let
             recurse = prefix: attrs: mkChildren (builtins.mapAttrs (attrName: attrs:
               if attrs.type or null == "derivation" then
-                mkLeaf {
+                {
                   forSystems = [ attrs.system ];
-                  doc = attrs.meta.description or null;
+                  shortDescription = attrs.meta.description or "";
                   derivation = attrs;
                   evalChecks.isDerivation = checkDerivation attrs;
                 }
@@ -140,7 +140,7 @@
         '';
         allowIFD = false;
         inventory = output: mkChildren (builtins.mapAttrs (overlayName: overlay:
-          mkLeaf {
+          {
             what = "Nixpkgs overlay";
             evalChecks.isOverlay =
               # FIXME: should try to apply the overlay to an actual
@@ -158,16 +158,15 @@
         in if res.success then res.value else default;
 
       mkChildren = children: { inherit children; };
-      mkLeaf = leaf: { inherit leaf; };
 
       derivationsInventory = what: isCheck: output: mkChildren (
         builtins.mapAttrs (systemType: packagesForSystem:
           {
             forSystems = [ systemType ];
             children = builtins.mapAttrs (packageName: package:
-              mkLeaf {
+              {
                 forSystems = [ systemType ];
-                doc = package.meta.description or null;
+                shortDescription = package.meta.description or "";
                 derivation = package;
                 evalChecks.isDerivation = checkDerivation package;
                 inherit what;
