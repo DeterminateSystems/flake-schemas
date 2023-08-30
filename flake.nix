@@ -33,6 +33,7 @@
               && builtins.isString (schemaDef.doc)
               && schemaDef ? inventory
               && builtins.isFunction (schemaDef.inventory);
+            what = "flake schema";
           }) output);
       };
 
@@ -41,7 +42,7 @@
         doc = ''
           The `packages` flake output contains packages that can be added to a shell using `nix shell`.
         '';
-        inventory = derivationsInventory false;
+        inventory = derivationsInventory "package" false;
       };
 
       legacyPackagesSchema = {
@@ -65,7 +66,7 @@
                               doc = attrs.meta.description or null;
                               #derivations = attrs;
                               evalChecks.isDerivation = checkDerivation attrs;
-                              what = "package '${attrs.name}'";
+                              what = "package";
                             };
                           }
                         ]
@@ -94,7 +95,7 @@
         doc = ''
           The `checks` flake output contains derivations that will be built by `nix flake check`.
         '';
-        inventory = derivationsInventory true;
+        inventory = derivationsInventory "CI test" true;
       };
 
       devShellsSchema = {
@@ -102,7 +103,7 @@
         doc = ''
           The `devShells` flake output contains derivations that provide a build environment for `nix develop`.
         '';
-        inventory = derivationsInventory false;
+        inventory = derivationsInventory "development environment" false;
       };
 
       hydraJobsSchema = {
@@ -140,6 +141,7 @@
         allowIFD = false;
         inventory = output: mkChildren (builtins.mapAttrs (overlayName: overlay:
           mkLeaf {
+            what = "Nixpkgs overlay";
             evalChecks.isOverlay =
               # FIXME: should try to apply the overlay to an actual
               # Nixpkgs.  But we don't have access to a nixpkgs
@@ -158,7 +160,7 @@
       mkChildren = children: { inherit children; };
       mkLeaf = leaf: { inherit leaf; };
 
-      derivationsInventory = isCheck: output: mkChildren (
+      derivationsInventory = what: isCheck: output: mkChildren (
         builtins.mapAttrs (systemType: packagesForSystem:
           {
             forSystems = [ systemType ];
@@ -166,9 +168,9 @@
               mkLeaf {
                 forSystems = [ systemType ];
                 doc = package.meta.description or null;
-                derivation = if isCheck then package else null;
+                derivation = package;
                 evalChecks.isDerivation = checkDerivation package;
-                what = "package '${package.name}'";
+                inherit what;
               }) packagesForSystem;
           })
           output);
