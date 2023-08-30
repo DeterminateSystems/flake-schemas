@@ -122,6 +122,7 @@
                   shortDescription = attrs.meta.description or "";
                   derivation = attrs;
                   evalChecks.isDerivation = checkDerivation attrs;
+                  what = "Hydra CI test";
                 }
               else
                 recurse (prefix + attrName + ".") attrs
