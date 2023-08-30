@@ -1,19 +1,17 @@
-name: Push to FlakeHub
-
+name: Publish on FlakeHub
 on:
   push:
-    branches: [main]
-
+    tags:
+      - "v*.*.*"
 jobs:
-  push:
-    runs-on: ubuntu-22.04
+  publish:
+    runs-on: "ubuntu-latest"
     permissions:
-      id-token: write
-      contents: read
+      id-token: "write"
+      contents: "read"
     steps:
-      - uses: actions/checkout@v3
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/flakehub-push@main
+      - uses: "actions/checkout@v3"
+      - uses: "DeterminateSystems/nix-installer-action@main"
+      - uses: "DeterminateSystems/flakehub-push@main"
         with:
-          visibility: hidden
-          rolling-prefix: "0.0"
+          visibility: "public"
