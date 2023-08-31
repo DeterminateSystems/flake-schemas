@@ -22,3 +22,7 @@ It supports the following flake output types:
 [nixos]: https://github.com/NixOS/nixpkgs/tree/master/nixos
 [overlays]: https://nixos.wiki/wiki/Overlays
 [packages]: https://search.nixos.org/packages
+
+## Read more
+
+- [Flake schemas: Making flake outputs extensible](https://determinate.systems/posts/flake-schemas) - blog post introducing flake schemas.
