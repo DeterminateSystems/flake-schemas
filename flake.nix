@@ -64,7 +64,7 @@
                             value = {
                               forSystems = [ attrs.system ];
                               shortDescription = attrs.meta.description or "";
-                              #derivations = attrs;
+                              derivation = attrs;
                               evalChecks.isDerivation = checkDerivation attrs;
                               what = "package";
                             };
