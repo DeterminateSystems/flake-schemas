@@ -15,14 +15,7 @@
         version = 1;
         doc = ''
           The `schemas` flake output is used to define and document flake outputs.
-
-          # Example
-
-          Bla bla
-
-          ```nix
-          ...
-          ```
+          For the expected format, consult the Nix manual.
         '';
         inventory = output: mkChildren (builtins.mapAttrs (schemaName: schemaDef:
           {
@@ -101,7 +94,7 @@
       devShellsSchema = {
         version = 1;
         doc = ''
-          The `devShells` flake output contains derivations that provide a build environment for `nix develop`.
+          The `devShells` flake output contains derivations that provide a development environment for `nix develop`.
         '';
         inventory = derivationsInventory "development environment" false;
       };
@@ -136,7 +129,7 @@
       overlaysSchema = {
         version = 1;
         doc = ''
-          The `overlays` flake output defines "overlays" that can be plugged into Nixpkgs.
+          The `overlays` flake output defines ["overlays"](https://nixos.org/manual/nixpkgs/stable/#chap-overlays) that can be plugged into Nixpkgs.
           Overlays add additional packages or modify or replace existing packages.
         '';
         inventory = output: mkChildren (builtins.mapAttrs (overlayName: overlay:
@@ -154,7 +147,7 @@
       nixosConfigurationsSchema = {
         version = 1;
         doc = ''
-          The `nixosConfigurations` flake output defines NixOS system configurations.
+          The `nixosConfigurations` flake output defines [NixOS system configurations](https://nixos.org/manual/nixos/stable/#ch-configuration).
         '';
         inventory = output: mkChildren (builtins.mapAttrs (configName: machine:
           {
