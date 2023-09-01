@@ -156,6 +156,18 @@
           }) output);
       };
 
+      darwinConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `darwinConfigurations` flake output defines [nix-darwin system configurations](https://github.com/LnL7/nix-darwin).
+        '';
+        inventory = output: mkChildren (builtins.mapAttrs (configName: machine:
+          {
+            what = "nix-darwin configuration";
+            derivation = machine.config.system.build.toplevel;
+          }) output);
+      };
+
       # Helper functions.
 
       try = e: default:
@@ -192,5 +204,6 @@
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
+      schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
 }
