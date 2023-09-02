@@ -156,6 +156,30 @@
           }) output);
       };
 
+      homeConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
+        '';
+        inventory = output: mkChildren (builtins.mapAttrs (configName: configuration:
+          {
+            what = "Home manager configuration";
+            derivation = configuration;
+          }) output);
+      };
+
+      darwinConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/lnl7/nix-darwin).
+        '';
+        inventory = output: mkChildren (builtins.mapAttrs (configName: configuration:
+          {
+            what = "nix-darwin configuration";
+            derivation = configuration;
+          }) output);
+      };
+
       # Helper functions.
 
       try = e: default:
@@ -192,5 +216,7 @@
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
+      schemas.homeConfigurations = homeConfigurationsSchema;
+      schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
 }
