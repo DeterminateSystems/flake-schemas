@@ -194,9 +194,10 @@
         { version ? 1, doc, what }: {
           inherit version;
           inventory = output: mkChildren (builtins.mapAttrs
-            (configName: derivation:
+            (configName: drv:
               {
-                inherit derivation what;
+                inherit what;
+                derivation = drv;
               })
             output);
         };
