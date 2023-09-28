@@ -17,17 +17,19 @@
           The `schemas` flake output is used to define and document flake outputs.
           For the expected format, consult the Nix manual.
         '';
-        inventory = output: mkChildren (builtins.mapAttrs (schemaName: schemaDef:
-          {
-            shortDescription = "A schema checker for the `${schemaName}` flake output";
-            evalChecks.isValidSchema =
-              schemaDef.version or 0 == 1
-              && schemaDef ? doc
-              && builtins.isString (schemaDef.doc)
-              && schemaDef ? inventory
-              && builtins.isFunction (schemaDef.inventory);
-            what = "flake schema";
-          }) output);
+        inventory = output: mkChildren (builtins.mapAttrs
+          (schemaName: schemaDef:
+            {
+              shortDescription = "A schema checker for the `${schemaName}` flake output";
+              evalChecks.isValidSchema =
+                schemaDef.version or 0 == 1
+                && schemaDef ? doc
+                && builtins.isString (schemaDef.doc)
+                && schemaDef ? inventory
+                && builtins.isFunction (schemaDef.inventory);
+              what = "flake schema";
+            })
+          output);
       };
 
       packagesSchema = {
@@ -45,42 +47,48 @@
           Since enumerating the packages in nested attribute sets is inefficient, `legacyPackages` should be avoided in favor of `packages`.
         '';
         inventory = output:
-          mkChildren (builtins.mapAttrs (systemType: packagesForSystem:
-            { forSystems = [ systemType ];
-              children =
-                let
-                  recurse = prefix: attrs: builtins.listToAttrs (builtins.concatLists (mapAttrsToList (attrName: attrs:
-                    # Necessary to deal with `AAAAAASomeThingsFailToEvaluate` etc. in Nixpkgs.
-                    try (
-                      if attrs.type or null == "derivation" then
-                        [ { name = attrName;
-                            value = {
-                              forSystems = [ attrs.system ];
-                              shortDescription = attrs.meta.description or "";
-                              derivation = attrs;
-                              evalChecks.isDerivation = checkDerivation attrs;
-                              what = "package";
-                            };
-                          }
-                        ]
-                      else
-                        # Recurse at the first and second levels, or if the
-                        # recurseForDerivations attribute if set.
-                        if attrs.recurseForDerivations or false
-                        then
-                          [ { name = attrName;
-                              value.children = recurse (prefix + attrName + ".") attrs;
-                            }
-                          ]
-                        else
+          mkChildren (builtins.mapAttrs
+            (systemType: packagesForSystem:
+              {
+                forSystems = [ systemType ];
+                children =
+                  let
+                    recurse = prefix: attrs: builtins.listToAttrs (builtins.concatLists (mapAttrsToList
+                      (attrName: attrs:
+                        # Necessary to deal with `AAAAAASomeThingsFailToEvaluate` etc. in Nixpkgs.
+                        try
+                          (
+                            if attrs.type or null == "derivation" then
+                              [{
+                                name = attrName;
+                                value = {
+                                  forSystems = [ attrs.system ];
+                                  shortDescription = attrs.meta.description or "";
+                                  derivation = attrs;
+                                  evalChecks.isDerivation = checkDerivation attrs;
+                                  what = "package";
+                                };
+                              }]
+                            else
+                            # Recurse at the first and second levels, or if the
+                            # recurseForDerivations attribute if set.
+                              if attrs.recurseForDerivations or false
+                              then
+                                [{
+                                  name = attrName;
+                                  value.children = recurse (prefix + attrName + ".") attrs;
+                                }]
+                              else
+                                [ ]
+                          )
                           [ ])
-                      [ ])
-                    attrs));
-                in
+                      attrs));
+                  in
                   # The top-level cannot be a derivation.
                   assert packagesForSystem.type or null != "derivation";
                   recurse (systemType + ".") packagesForSystem;
-            }) output);
+              })
+            output);
       };
 
       checksSchema = {
@@ -108,22 +116,24 @@
         allowIFD = false;
         inventory = output:
           let
-            recurse = prefix: attrs: mkChildren (builtins.mapAttrs (attrName: attrs:
-              if attrs.type or null == "derivation" then
-                {
-                  forSystems = [ attrs.system ];
-                  shortDescription = attrs.meta.description or "";
-                  derivation = attrs;
-                  evalChecks.isDerivation = checkDerivation attrs;
-                  what = "Hydra CI test";
-                }
-              else
-                recurse (prefix + attrName + ".") attrs
-            ) attrs);
+            recurse = prefix: attrs: mkChildren (builtins.mapAttrs
+              (attrName: attrs:
+                if attrs.type or null == "derivation" then
+                  {
+                    forSystems = [ attrs.system ];
+                    shortDescription = attrs.meta.description or "";
+                    derivation = attrs;
+                    evalChecks.isDerivation = checkDerivation attrs;
+                    what = "Hydra CI test";
+                  }
+                else
+                  recurse (prefix + attrName + ".") attrs
+              )
+              attrs);
           in
-            # The top-level cannot be a derivation.
-            assert output.type or null != "derivation";
-            recurse "" output;
+          # The top-level cannot be a derivation.
+          assert output.type or null != "derivation";
+          recurse "" output;
       };
 
       overlaysSchema = {
@@ -132,16 +142,18 @@
           The `overlays` flake output defines ["overlays"](https://nixos.org/manual/nixpkgs/stable/#chap-overlays) that can be plugged into Nixpkgs.
           Overlays add additional packages or modify or replace existing packages.
         '';
-        inventory = output: mkChildren (builtins.mapAttrs (overlayName: overlay:
-          {
-            what = "Nixpkgs overlay";
-            evalChecks.isOverlay =
-              # FIXME: should try to apply the overlay to an actual
-              # Nixpkgs.  But we don't have access to a nixpkgs
-              # flake here. Maybe this schema should be moved to the
-              # nixpkgs flake, where it does have access.
-              builtins.isAttrs (overlay {} {});
-          }) output);
+        inventory = output: mkChildren (builtins.mapAttrs
+          (overlayName: overlay:
+            {
+              what = "Nixpkgs overlay";
+              evalChecks.isOverlay =
+                # FIXME: should try to apply the overlay to an actual
+                # Nixpkgs.  But we don't have access to a nixpkgs
+                # flake here. Maybe this schema should be moved to the
+                # nixpkgs flake, where it does have access.
+                builtins.isAttrs (overlay { } { });
+            })
+          output);
       };
 
       nixosConfigurationsSchema = {
@@ -149,35 +161,27 @@
         doc = ''
           The `nixosConfigurations` flake output defines [NixOS system configurations](https://nixos.org/manual/nixos/stable/#ch-configuration).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs (configName: machine:
-          {
-            what = "NixOS configuration";
-            derivation = machine.config.system.build.toplevel;
-          }) output);
+        inventory = output: mkChildren (builtins.mapAttrs
+          (configName: machine:
+            {
+              what = "NixOS configuration";
+              derivation = machine.config.system.build.toplevel;
+            })
+          output);
       };
 
-      homeConfigurationsSchema = {
-        version = 1;
+      homeConfigurationsSchema = drvSet {
         doc = ''
           The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs (configName: configuration:
-          {
-            what = "Home manager configuration";
-            derivation = configuration;
-          }) output);
+        what = "Home manager configuration";
       };
 
-      darwinConfigurationsSchema = {
-        version = 1;
+      darwinConfigurationsSchema = drvSet {
         doc = ''
           The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/lnl7/nix-darwin).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs (configName: configuration:
-          {
-            what = "nix-darwin configuration";
-            derivation = configuration;
-          }) output);
+        what = "nix-darwin configuration";
       };
 
       # Helper functions.
@@ -186,22 +190,36 @@
         let res = builtins.tryEval e;
         in if res.success then res.value else default;
 
+      drvSet =
+        { version ? 1, doc, what }: {
+          inherit version;
+          inventory = output: mkChildren (builtins.mapAttrs
+            (configName: derivation:
+              {
+                inherit derivation what;
+              })
+            output);
+        };
+
       mkChildren = children: { inherit children; };
 
       derivationsInventory = what: isFlakeCheck: output: mkChildren (
-        builtins.mapAttrs (systemType: packagesForSystem:
-          {
-            forSystems = [ systemType ];
-            children = builtins.mapAttrs (packageName: package:
-              {
-                forSystems = [ systemType ];
-                shortDescription = package.meta.description or "";
-                derivation = package;
-                evalChecks.isDerivation = checkDerivation package;
-                inherit what;
-                isFlakeCheck = isFlakeCheck;
-              }) packagesForSystem;
-          })
+        builtins.mapAttrs
+          (systemType: packagesForSystem:
+            {
+              forSystems = [ systemType ];
+              children = builtins.mapAttrs
+                (packageName: package:
+                  {
+                    forSystems = [ systemType ];
+                    shortDescription = package.meta.description or "";
+                    derivation = package;
+                    evalChecks.isDerivation = checkDerivation package;
+                    inherit what;
+                    isFlakeCheck = isFlakeCheck;
+                  })
+                packagesForSystem;
+            })
           output);
 
     in
