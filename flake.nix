@@ -179,7 +179,7 @@
 
       darwinConfigurationsSchema = drvSet {
         doc = ''
-          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/lnl7/nix-darwin).
+          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
         '';
         what = "nix-darwin configuration";
       };
