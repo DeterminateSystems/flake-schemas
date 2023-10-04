@@ -192,7 +192,7 @@
 
       drvSet =
         { version ? 1, doc, what }: {
-          inherit version;
+          inherit doc version;
           inventory = output: mkChildren (builtins.mapAttrs
             (configName: drv:
               {
