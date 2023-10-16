@@ -174,7 +174,7 @@
         doc = ''
           The `nixosModules` flake output defines importable [NixOS modules](https://nixos.org/manual/nixos/stable/#sec-writing-modules).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs (moduleName: module:
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs (moduleName: module:
           {
             what = "NixOS module";
           }) output);
