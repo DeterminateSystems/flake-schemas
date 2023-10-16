@@ -169,6 +169,17 @@
           output);
       };
 
+      nixosModulesSchema = {
+        version = 1;
+        doc = ''
+          The `nixosModules` flake output defines importable [NixOS modules](https://nixos.org/manual/nixos/stable/#sec-writing-modules).
+        '';
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs (moduleName: module:
+          {
+            what = "NixOS module";
+          }) output);
+      };
+
     in
 
     {
@@ -209,5 +220,6 @@
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
+      schemas.nixosModules = nixosModulesSchema;
     };
 }
