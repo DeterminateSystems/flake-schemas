@@ -31,6 +31,31 @@
           output);
       };
 
+  appsSchema = {
+    version = 1;
+    doc = ''
+      The `apps` output provides commands available via `nix run`.
+    '';
+    inventory = output:
+      self.lib.mkChildren (builtins.mapAttrs (system: apps: let
+          forSystems = [system];
+        in {
+          inherit forSystems;
+          children =
+            builtins.mapAttrs (appName: app: {
+              inherit forSystems;
+              evalChecks.isValidApp =
+                app ? type
+                && app.type == "app"
+                && app ? program
+                && builtins.isString app.program;
+              what = "app";
+            })
+            apps;
+        })
+        output);
+  };
+
       packagesSchema = {
         version = 1;
         doc = ''
@@ -104,6 +129,48 @@
           The `devShells` flake output contains derivations that provide a development environment for `nix develop`.
         '';
         inventory = self.lib.derivationsInventory "development environment" false;
+      };
+
+      formatterSchema = {
+        version = 1;
+        doc = ''
+          The `formatter` output specifies the package to use to format the
+          project.
+        '';
+        inventory = output:
+          self.lib.mkChildren (builtins.mapAttrs
+            (system: formatter:
+              {
+                forSystems = [system];
+                shortDescription = formatter.meta.description or "";
+                derivation = formatter;
+                evalChecks.isDerivation = checkDerivation formatter;
+                what = "package";
+                isFlakeCheck = false;
+              }
+            )
+            output);
+      };
+
+      templatesSchema = {
+        version = 1;
+        doc = ''
+          The `templates` output provides project templates.
+        '';
+        inventory = output:
+          self.lib.mkChildren (builtins.mapAttrs
+            (templateName: template:
+              {
+                shortDescription = template.description or "";
+                evalChecks.isValidTemplate =
+                  template ? path
+                  && builtins.isPath template.path
+                  && template ? description
+                  && builtins.isString template.description;
+                what = "template";
+              }
+            )
+            output);
       };
 
       hydraJobsSchema = {
@@ -213,10 +280,13 @@
 
       # FIXME: distinguish between available and active schemas?
       schemas.schemas = schemasSchema;
+      schemas.apps = appsSchema;
       schemas.packages = packagesSchema;
       schemas.legacyPackages = legacyPackagesSchema;
       schemas.checks = checksSchema;
       schemas.devShells = devShellsSchema;
+      schemas.formatter = formatterSchema;
+      schemas.templates = templatesSchema;
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
