@@ -135,6 +135,54 @@
           recurse "" output;
       };
 
+      appsSchema = {
+        version = 1;
+        doc = ''
+          The `apps` output provides commands available via `nix run`.
+        '';
+        inventory = output:
+          self.lib.mkChildren (builtins.mapAttrs
+            (system: apps:
+              let
+                forSystems = [ system ];
+              in
+              {
+                inherit forSystems;
+                children =
+                  builtins.mapAttrs
+                    (appName: app: {
+                      inherit forSystems;
+                      evalChecks.isValidApp =
+                        app ? type
+                        && app.type == "app"
+                        && app ? program
+                        && builtins.isString app.program;
+                      what = "app";
+                    })
+                    apps;
+              })
+            output);
+      };
+
+      libSchema = {
+        version = 1;
+        doc = ''
+          The `lib` flake output exposes arbitrary Nix terms.
+        '';
+        inventory =
+          let
+            processValue = value:
+              let
+                what = builtins.typeOf value;
+              in
+              if what == "set" then
+                self.lib.mkChildren
+                  (builtins.mapAttrs (name: processValue) value)
+              else { inherit what; };
+          in
+          processValue;
+      };
+
       overlaysSchema = {
         version = 1;
         doc = ''
@@ -174,11 +222,41 @@
         doc = ''
           The `nixosModules` flake output defines importable [NixOS modules](https://nixos.org/manual/nixos/stable/#sec-writing-modules).
         '';
-        inventory = output: self.lib.mkChildren (builtins.mapAttrs (moduleName: module:
-          {
-            what = "NixOS module";
-          }) output);
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
+          (moduleName: module:
+            {
+              what = "NixOS module";
+            })
+          output);
       };
+
+      homeConfigurationsSchema = drvSet {
+        doc = ''
+          The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
+        '';
+        what = "Home manager configuration";
+      };
+
+      darwinConfigurationsSchema = drvSet {
+        doc = ''
+          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
+        '';
+        what = "nix-darwin configuration";
+      };
+
+      drvSet =
+        { version ? 1, doc, what }: {
+          inherit doc version;
+          inventory = output: mkChildren (builtins.mapAttrs
+            (configName: drv:
+              {
+                inherit what;
+                derivation = drv;
+              })
+            output);
+        };
+
+      mkChildren = children: { inherit children; };
 
     in
 
@@ -212,14 +290,18 @@
       };
 
       # FIXME: distinguish between available and active schemas?
+      schemas.apps = appsSchema;
       schemas.schemas = schemasSchema;
       schemas.packages = packagesSchema;
       schemas.legacyPackages = legacyPackagesSchema;
       schemas.checks = checksSchema;
       schemas.devShells = devShellsSchema;
       schemas.hydraJobs = hydraJobsSchema;
+      schemas.lib = libSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
       schemas.nixosModules = nixosModulesSchema;
+      schemas.homeConfigurations = homeConfigurationsSchema;
+      schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
 }
