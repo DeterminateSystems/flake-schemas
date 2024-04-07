@@ -230,34 +230,35 @@
           output);
       };
 
-      homeConfigurationsSchema = drvSet {
+      homeConfigurationsSchema = {
+        version = 1;
         doc = ''
           The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
         '';
-        what = "Home manager configuration";
+        inventory = output: mkChildren (builtins.mapAttrs
+          (configName: host:
+            {
+              what = "home-manager configuration";
+              derivation = host.activationPackage;
+            })
+          output);
       };
 
-      darwinConfigurationsSchema = drvSet {
+      darwinConfigurationsSchema = {
+        version = 1;
         doc = ''
-          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
+          The `darwinConfigurations` flake output defines [nix-darwin system configurations](https://github.com/LnL7/nix-darwin).
         '';
-        what = "nix-darwin configuration";
+        inventory = output: mkChildren (builtins.mapAttrs
+          (configName: machine:
+            {
+              what = "nix-darwin configuration";
+              derivation = machine.config.system.build.toplevel;
+            })
+          output);
       };
-
-      drvSet =
-        { version ? 1, doc, what }: {
-          inherit doc version;
-          inventory = output: mkChildren (builtins.mapAttrs
-            (configName: drv:
-              {
-                inherit what;
-                derivation = drv;
-              })
-            output);
-        };
 
       mkChildren = children: { inherit children; };
-
     in
 
     {
