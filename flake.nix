@@ -253,7 +253,7 @@
           (configName: machine:
             {
               what = "nix-darwin configuration";
-              derivation = machine.config.system.build.toplevel;
+              derivation = machine.system;
             })
           output);
       };
