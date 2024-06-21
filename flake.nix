@@ -2,9 +2,7 @@
   description = "Schemas for well-known Nix flake output types";
 
   outputs = { self }:
-
     let
-
       mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
       checkDerivation = drv:
@@ -174,18 +172,16 @@
         doc = ''
           The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
         '';
-        what = "Home manager configuration";
-      };
-
-      darwinConfigurationsSchema = drvSet {
-        doc = ''
-          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
-        '';
-        what = "nix-darwin configuration";
+        inventory = output: mkChildren (builtins.mapAttrs
+          (configName: this:
+            {
+              what = "Home manager configuration";
+              derivation = this.activationPackage;
+            })
+          output);
       };
 
       # Helper functions.
-
       try = e: default:
         let res = builtins.tryEval e;
         in if res.success then res.value else default;
@@ -236,6 +232,5 @@
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
-      schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
 }
