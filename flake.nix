@@ -2,6 +2,7 @@
   description = "Schemas for well-known Nix flake output types";
 
   outputs = { self }:
+
     let
       mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
@@ -15,7 +16,7 @@
           The `schemas` flake output is used to define and document flake outputs.
           For the expected format, consult the Nix manual.
         '';
-        inventory = output: mkChildren (builtins.mapAttrs
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (schemaName: schemaDef:
             {
               shortDescription = "A schema checker for the `${schemaName}` flake output";
@@ -35,7 +36,7 @@
         doc = ''
           The `packages` flake output contains packages that can be added to a shell using `nix shell`.
         '';
-        inventory = derivationsInventory "package" false;
+        inventory = self.lib.derivationsInventory "package" false;
       };
 
       legacyPackagesSchema = {
@@ -45,7 +46,7 @@
           Since enumerating the packages in nested attribute sets is inefficient, `legacyPackages` should be avoided in favor of `packages`.
         '';
         inventory = output:
-          mkChildren (builtins.mapAttrs
+          self.lib.mkChildren (builtins.mapAttrs
             (systemType: packagesForSystem:
               {
                 forSystems = [ systemType ];
@@ -54,7 +55,7 @@
                     recurse = prefix: attrs: builtins.listToAttrs (builtins.concatLists (mapAttrsToList
                       (attrName: attrs:
                         # Necessary to deal with `AAAAAASomeThingsFailToEvaluate` etc. in Nixpkgs.
-                        try
+                        self.lib.try
                           (
                             if attrs.type or null == "derivation" then
                               [{
@@ -94,7 +95,7 @@
         doc = ''
           The `checks` flake output contains derivations that will be built by `nix flake check`.
         '';
-        inventory = derivationsInventory "CI test" true;
+        inventory = self.lib.derivationsInventory "CI test" true;
       };
 
       devShellsSchema = {
@@ -102,7 +103,7 @@
         doc = ''
           The `devShells` flake output contains derivations that provide a development environment for `nix develop`.
         '';
-        inventory = derivationsInventory "development environment" false;
+        inventory = self.lib.derivationsInventory "development environment" false;
       };
 
       hydraJobsSchema = {
@@ -114,7 +115,7 @@
         allowIFD = false;
         inventory = output:
           let
-            recurse = prefix: attrs: mkChildren (builtins.mapAttrs
+            recurse = prefix: attrs: self.lib.mkChildren (builtins.mapAttrs
               (attrName: attrs:
                 if attrs.type or null == "derivation" then
                   {
@@ -140,7 +141,7 @@
           The `overlays` flake output defines ["overlays"](https://nixos.org/manual/nixpkgs/stable/#chap-overlays) that can be plugged into Nixpkgs.
           Overlays add additional packages or modify or replace existing packages.
         '';
-        inventory = output: mkChildren (builtins.mapAttrs
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (overlayName: overlay:
             {
               what = "Nixpkgs overlay";
@@ -159,7 +160,7 @@
         doc = ''
           The `nixosConfigurations` flake output defines [NixOS system configurations](https://nixos.org/manual/nixos/stable/#ch-configuration).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (configName: machine:
             {
               what = "NixOS configuration";
@@ -168,12 +169,23 @@
           output);
       };
 
+      nixosModulesSchema = {
+        version = 1;
+        doc = ''
+          The `nixosModules` flake output defines importable [NixOS modules](https://nixos.org/manual/nixos/stable/#sec-writing-modules).
+        '';
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs (moduleName: module:
+          {
+            what = "NixOS module";
+          }) output);
+      };
+
       homeConfigurationsSchema = {
         version = 1;
         doc = ''
           The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (configName: this:
             {
               what = "Home manager configuration";
@@ -187,7 +199,7 @@
         doc = ''
           The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
         '';
-        inventory = output: mkChildren (builtins.mapAttrs
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (configName: this:
             {
               what = "nix-darwin configuration";
@@ -195,36 +207,37 @@
             })
           output);
       };
-
-      # Helper functions.
-      try = e: default:
-        let res = builtins.tryEval e;
-        in if res.success then res.value else default;
-
-      mkChildren = children: { inherit children; };
-
-      derivationsInventory = what: isFlakeCheck: output: mkChildren (
-        builtins.mapAttrs
-          (systemType: packagesForSystem:
-            {
-              forSystems = [ systemType ];
-              children = builtins.mapAttrs
-                (packageName: package:
-                  {
-                    forSystems = [ systemType ];
-                    shortDescription = package.meta.description or "";
-                    derivation = package;
-                    evalChecks.isDerivation = checkDerivation package;
-                    inherit what;
-                    isFlakeCheck = isFlakeCheck;
-                  })
-                packagesForSystem;
-            })
-          output);
-
     in
 
     {
+      # Helper functions
+      lib = {
+        try = e: default:
+          let res = builtins.tryEval e;
+          in if res.success then res.value else default;
+
+        mkChildren = children: { inherit children; };
+
+        derivationsInventory = what: isFlakeCheck: output: self.lib.mkChildren (
+          builtins.mapAttrs
+            (systemType: packagesForSystem:
+              {
+                forSystems = [ systemType ];
+                children = builtins.mapAttrs
+                  (packageName: package:
+                    {
+                      forSystems = [ systemType ];
+                      shortDescription = package.meta.description or "";
+                      derivation = package;
+                      evalChecks.isDerivation = checkDerivation package;
+                      inherit what;
+                      isFlakeCheck = isFlakeCheck;
+                    })
+                  packagesForSystem;
+              })
+            output);
+      };
+
       # FIXME: distinguish between available and active schemas?
       schemas.schemas = schemasSchema;
       schemas.packages = packagesSchema;
@@ -234,6 +247,7 @@
       schemas.hydraJobs = hydraJobsSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
+      schemas.nixosModules = nixosModulesSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
