@@ -168,7 +168,8 @@
           output);
       };
 
-      homeConfigurationsSchema = drvSet {
+      homeConfigurationsSchema = {
+        version = 1;
         doc = ''
           The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
         '';
@@ -181,22 +182,24 @@
           output);
       };
 
+      darwinConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
+        '';
+        inventory = output: mkChildren (builtins.mapAttrs
+          (configName: this:
+            {
+              what = "nix-darwin configuration";
+              derivation = this.system;
+            })
+          output);
+      };
+
       # Helper functions.
       try = e: default:
         let res = builtins.tryEval e;
         in if res.success then res.value else default;
-
-      drvSet =
-        { version ? 1, doc, what }: {
-          inherit doc version;
-          inventory = output: mkChildren (builtins.mapAttrs
-            (configName: drv:
-              {
-                inherit what;
-                derivation = drv;
-              })
-            output);
-        };
 
       mkChildren = children: { inherit children; };
 
@@ -232,5 +235,6 @@
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
+      schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
 }
