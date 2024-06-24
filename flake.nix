@@ -174,12 +174,41 @@
         doc = ''
           The `nixosModules` flake output defines importable [NixOS modules](https://nixos.org/manual/nixos/stable/#sec-writing-modules).
         '';
-        inventory = output: self.lib.mkChildren (builtins.mapAttrs (moduleName: module:
-          {
-            what = "NixOS module";
-          }) output);
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
+          (moduleName: module:
+            {
+              what = "NixOS module";
+            })
+          output);
       };
 
+      homeConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `homeConfigurations` flake output defines [Home Manager configurations](https://github.com/nix-community/home-manager).
+        '';
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
+          (configName: this:
+            {
+              what = "Home manager configuration";
+              derivation = this.activationPackage;
+            })
+          output);
+      };
+
+      darwinConfigurationsSchema = {
+        version = 1;
+        doc = ''
+          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
+        '';
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
+          (configName: this:
+            {
+              what = "nix-darwin configuration";
+              derivation = this.system;
+            })
+          output);
+      };
     in
 
     {
@@ -221,5 +250,7 @@
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
       schemas.nixosModules = nixosModulesSchema;
+      schemas.homeConfigurations = homeConfigurationsSchema;
+      schemas.darwinConfigurations = darwinConfigurationsSchema;
     };
 }
