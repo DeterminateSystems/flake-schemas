@@ -2,7 +2,6 @@
   description = "Schemas for well-known Nix flake output types";
 
   outputs = { self }:
-
     let
       mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
@@ -71,8 +70,8 @@
       legacyPackagesSchema = {
         version = 1;
         doc = ''
-          The `legacyPackages` flake output is similar to `packages`, but it can be nested (i.e. contain attribute sets that contain more packages).
-          Since enumerating the packages in nested attribute sets is inefficient, `legacyPackages` should be avoided in favor of `packages`.
+          The `legacyPackages` flake output is similar to `packages` but different in that it can be nested and thus contain attribute sets that contain more packages.
+          Since enumerating packages in nested attribute sets can be inefficient, you should favor `packages` over `legacyPackages`.
         '';
         inventory = output:
           self.lib.mkChildren (builtins.mapAttrs

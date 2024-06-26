@@ -14,5 +14,5 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Check Nix formatting
         run: |
-          nix shell "https://flakehub.com/f/NixOS/nixpkgs/*#nixpkgs-fmt"
-          git ls-files '*.nix' | nixpkgs-fmt --check
+          nix shell "https://flakehub.com/f/NixOS/nixpkgs/*#nixpkgs-fmt" --command \
+            git ls-files '*.nix' | xargs nixpkgs-fmt --check
