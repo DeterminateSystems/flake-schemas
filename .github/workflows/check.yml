@@ -15,4 +15,4 @@ jobs:
       - name: Check Nix formatting
         run: |
           nix shell "https://flakehub.com/f/NixOS/nixpkgs/*#nixpkgs-fmt" --command \
-            git ls-files '*.nix' | xargs nixpkgs-fmt --check
+            sh -c "git ls-files '*.nix' | xargs nixpkgs-fmt --check"
