@@ -31,30 +31,34 @@
           output);
       };
 
-  appsSchema = {
-    version = 1;
-    doc = ''
-      The `apps` output provides commands available via `nix run`.
-    '';
-    inventory = output:
-      self.lib.mkChildren (builtins.mapAttrs (system: apps: let
-          forSystems = [system];
-        in {
-          inherit forSystems;
-          children =
-            builtins.mapAttrs (appName: app: {
-              inherit forSystems;
-              evalChecks.isValidApp =
-                app ? type
-                && app.type == "app"
-                && app ? program
-                && builtins.isString app.program;
-              what = "app";
-            })
-            apps;
-        })
-        output);
-  };
+      appsSchema = {
+        version = 1;
+        doc = ''
+          The `apps` output provides commands available via `nix run`.
+        '';
+        inventory = output:
+          self.lib.mkChildren (builtins.mapAttrs
+            (system: apps:
+              let
+                forSystems = [ system ];
+              in
+              {
+                inherit forSystems;
+                children =
+                  builtins.mapAttrs
+                    (appName: app: {
+                      inherit forSystems;
+                      evalChecks.isValidApp =
+                        app ? type
+                        && app.type == "app"
+                        && app ? program
+                        && builtins.isString app.program;
+                      what = "app";
+                    })
+                    apps;
+              })
+            output);
+      };
 
       packagesSchema = {
         version = 1;
@@ -134,14 +138,13 @@
       formatterSchema = {
         version = 1;
         doc = ''
-          The `formatter` output specifies the package to use to format the
-          project.
+          The `formatter` output specifies the package to use to format the project.
         '';
         inventory = output:
           self.lib.mkChildren (builtins.mapAttrs
             (system: formatter:
               {
-                forSystems = [system];
+                forSystems = [ system ];
                 shortDescription = formatter.meta.description or "";
                 derivation = formatter;
                 evalChecks.isDerivation = checkDerivation formatter;
@@ -176,8 +179,7 @@
       hydraJobsSchema = {
         version = 1;
         doc = ''
-          The `hydraJobs` flake output defines derivations to be built
-          by the Hydra continuous integration system.
+          The `hydraJobs` flake output defines derivations to be built by the Hydra continuous integration system.
         '';
         allowIFD = false;
         inventory = output:
