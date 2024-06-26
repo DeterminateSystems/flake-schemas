@@ -259,7 +259,7 @@
         inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (configName: this:
             {
-              what = "Home manager configuration";
+              what = "Home Manager configuration";
               derivation = this.activationPackage;
             })
           output);
