@@ -2,7 +2,6 @@
   description = "Schemas for well-known Nix flake output types";
 
   outputs = { self }:
-
     let
       mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
@@ -31,30 +30,34 @@
           output);
       };
 
-  appsSchema = {
-    version = 1;
-    doc = ''
-      The `apps` output provides commands available via `nix run`.
-    '';
-    inventory = output:
-      self.lib.mkChildren (builtins.mapAttrs (system: apps: let
-          forSystems = [system];
-        in {
-          inherit forSystems;
-          children =
-            builtins.mapAttrs (appName: app: {
-              inherit forSystems;
-              evalChecks.isValidApp =
-                app ? type
-                && app.type == "app"
-                && app ? program
-                && builtins.isString app.program;
-              what = "app";
-            })
-            apps;
-        })
-        output);
-  };
+      appsSchema = {
+        version = 1;
+        doc = ''
+          The `apps` output provides commands available via `nix run`.
+        '';
+        inventory = output:
+          self.lib.mkChildren (builtins.mapAttrs
+            (system: apps:
+              let
+                forSystems = [ system ];
+              in
+              {
+                inherit forSystems;
+                children =
+                  builtins.mapAttrs
+                    (appName: app: {
+                      inherit forSystems;
+                      evalChecks.isValidApp =
+                        app ? type
+                        && app.type == "app"
+                        && app ? program
+                        && builtins.isString app.program;
+                      what = "app";
+                    })
+                    apps;
+              })
+            output);
+      };
 
       packagesSchema = {
         version = 1;
@@ -67,8 +70,8 @@
       legacyPackagesSchema = {
         version = 1;
         doc = ''
-          The `legacyPackages` flake output is similar to `packages`, but it can be nested (i.e. contain attribute sets that contain more packages).
-          Since enumerating the packages in nested attribute sets is inefficient, `legacyPackages` should be avoided in favor of `packages`.
+          The `legacyPackages` flake output is similar to `packages` but different in that it can be nested and thus contain attribute sets that contain more packages.
+          Since enumerating packages in nested attribute sets can be inefficient, you should favor `packages` over `legacyPackages`.
         '';
         inventory = output:
           self.lib.mkChildren (builtins.mapAttrs
@@ -134,14 +137,13 @@
       formatterSchema = {
         version = 1;
         doc = ''
-          The `formatter` output specifies the package to use to format the
-          project.
+          The `formatter` output specifies the package to use to format the project.
         '';
         inventory = output:
           self.lib.mkChildren (builtins.mapAttrs
             (system: formatter:
               {
-                forSystems = [system];
+                forSystems = [ system ];
                 shortDescription = formatter.meta.description or "";
                 derivation = formatter;
                 evalChecks.isDerivation = checkDerivation formatter;
@@ -176,8 +178,7 @@
       hydraJobsSchema = {
         version = 1;
         doc = ''
-          The `hydraJobs` flake output defines derivations to be built
-          by the Hydra continuous integration system.
+          The `hydraJobs` flake output defines derivations to be built by the Hydra continuous integration system.
         '';
         allowIFD = false;
         inventory = output:
@@ -257,7 +258,7 @@
         inventory = output: self.lib.mkChildren (builtins.mapAttrs
           (configName: this:
             {
-              what = "Home manager configuration";
+              what = "Home Manager configuration";
               derivation = this.activationPackage;
             })
           output);
