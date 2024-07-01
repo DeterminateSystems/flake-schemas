@@ -7,7 +7,12 @@
 
       checkDerivation = drv:
         drv.type or null == "derivation"
-        && drv ? drvPath;
+        && drv ? drvPath
+        && drv ? name
+        && builtins.isString drv.name;
+
+      checkModule = module:
+        builtins.isAttrs module || builtins.isFunction module;
 
       schemasSchema = {
         version = 1;
@@ -218,7 +223,10 @@
                 # Nixpkgs.  But we don't have access to a nixpkgs
                 # flake here. Maybe this schema should be moved to the
                 # nixpkgs flake, where it does have access.
-                builtins.isAttrs (overlay { } { });
+                if !builtins.isFunction overlay then
+                  throw "overlay is not a function, but a set instead"
+                else
+                  builtins.isAttrs (overlay { } { });
             })
           output);
       };
@@ -246,6 +254,7 @@
           (moduleName: module:
             {
               what = "NixOS module";
+              evalChecks.isFunctionOrAttrs = checkModule module;
             })
           output);
       };
