@@ -9,6 +9,9 @@
         drv.type or null == "derivation"
         && drv ? drvPath;
 
+      checkModule = module:
+        builtins.isAttrs module || builtins.isFunction module;
+
       schemasSchema = {
         version = 1;
         doc = ''
@@ -246,6 +249,7 @@
           (moduleName: module:
             {
               what = "NixOS module";
+              evalChecks.isFunctionOrAttrs = checkModule module;
             })
           output);
       };
