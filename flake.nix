@@ -113,7 +113,10 @@
                               else
                                 [ ]
                           )
-                          [ ])
+                          [{
+                            name = attrName;
+                            value = throw "failed";
+                          }])
                       attrs));
                   in
                   # The top-level cannot be a derivation.
