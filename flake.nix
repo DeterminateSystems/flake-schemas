@@ -7,7 +7,9 @@
 
       checkDerivation = drv:
         drv.type or null == "derivation"
-        && drv ? drvPath;
+        && drv ? drvPath
+        && drv ? name
+        && builtins.isString drv.name;
 
       checkModule = module:
         builtins.isAttrs module || builtins.isFunction module;
