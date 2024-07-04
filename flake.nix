@@ -72,6 +72,14 @@
         inventory = self.lib.derivationsInventory "package" false;
       };
 
+      dockerImagesSchema = {
+        version = 1;
+        doc = ''
+          The `dockerImages` flake output contains derivations that build valid Docker images.
+        '';
+        inventory = self.lib.derivationsInventory "Docker image" false;
+      };
+
       legacyPackagesSchema = {
         version = 1;
         doc = ''
@@ -335,5 +343,6 @@
       schemas.nixosModules = nixosModulesSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
+      schemas.dockerImages = dockerImagesSchema;
     };
 }
