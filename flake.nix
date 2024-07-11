@@ -252,6 +252,7 @@
             {
               what = "NixOS configuration";
               derivation = machine.config.system.build.toplevel;
+              forSystems = [ machine.pkgs.system ];
             })
           output);
       };
