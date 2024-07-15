@@ -15,6 +15,7 @@ It supports the following flake output types:
 * [`packages`][packages]
 * [`darwinConfigurations`][darwin]
 * [`homeConfigurations`][home]
+* [`dockerImages`][docker]
 * `schemas`
 
 ## Read more
@@ -24,6 +25,7 @@ It supports the following flake output types:
 [blog]: https://determinate.systems/posts/flake-schemas
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/LnL7/nix-darwin
+[docker]: https://docker.com
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
 [flakes]: https://zero-to-nix.com/concepts/flakes
 [home]: https://github.com/nix-community/home-manager
