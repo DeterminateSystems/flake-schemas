@@ -298,6 +298,20 @@
             })
           output);
       };
+
+      darwinModulesSchema = {
+        version = 1;
+        doc = ''
+          The `darwinModules` flake output defines importable [nix-darwin modules](https://github.com/LnL7/nix-darwin).
+        '';
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
+          (moduleName: module:
+            {
+              what = "nix-darwin module";
+              evalChecks.isFunctionOrAttrs = checkModule module;
+            })
+          output);
+      };
     in
 
     {
@@ -344,6 +358,7 @@
       schemas.nixosModules = nixosModulesSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
+      schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
     };
 }
