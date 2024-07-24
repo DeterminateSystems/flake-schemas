@@ -281,7 +281,7 @@
             {
               what = "Home Manager configuration";
               derivation = this.activationPackage;
-              forSystems = [ derivation.system ];
+              forSystems = [ this.activationPackage.system ];
             })
           output);
       };
@@ -296,7 +296,7 @@
             {
               what = "nix-darwin configuration";
               derivation = this.system;
-              forSystems = [ derivation.system ];
+              forSystems = [ this.system.system ];
             })
           output);
       };
