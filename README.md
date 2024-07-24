@@ -14,6 +14,7 @@ It supports the following flake output types:
 * [`overlays`][overlays]
 * [`packages`][packages]
 * [`darwinConfigurations`][darwin]
+* [`darwinModules`][darwin]
 * [`homeConfigurations`][home]
 * [`dockerImages`][docker]
 * `schemas`
