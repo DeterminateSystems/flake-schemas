@@ -16,6 +16,7 @@ It supports the following flake output types:
 * [`darwinConfigurations`][darwin]
 * [`darwinModules`][darwin]
 * [`homeConfigurations`][home]
+* [`homeManagerModules`][home]
 * [`dockerImages`][docker]
 * `schemas`
 
