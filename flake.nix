@@ -286,6 +286,20 @@
           output);
       };
 
+      homeModulesSchema = {
+        version = 1;
+        doc = ''
+          The `homeModules` flake output defines importable [Home Manager](https://github.com/nix-community/home-manager) modules.
+        '';
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs
+          (moduleName: module:
+            {
+              what = "Home Manager module";
+              evalChecks.isFunctionOrAttrs = checkModule module;
+            })
+          output);
+      };
+
       darwinConfigurationsSchema = {
         version = 1;
         doc = ''
@@ -359,6 +373,7 @@
       schemas.nixosConfigurations = nixosConfigurationsSchema;
       schemas.nixosModules = nixosModulesSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
+      schemas.homeModules = homeModulesSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
       schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
