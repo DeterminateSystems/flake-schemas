@@ -58,6 +58,7 @@
                         && app ? program
                         && builtins.isString app.program;
                       what = "app";
+                      shortDescription = app.description or "";
                     })
                     apps;
               })
