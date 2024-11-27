@@ -12,7 +12,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
+
       - name: Check Nix formatting
         run: |
-          nix shell "https://flakehub.com/f/NixOS/nixpkgs/*#nixpkgs-fmt" --command \
+          nix shell "https://flakehub.com/f/NixOS/nixpkgs/0.2405.636988#nixpkgs-fmt" --command \
             sh -c "git ls-files '*.nix' | xargs nixpkgs-fmt --check"
+
+      - name: Check links in README
+        run: |
+          nix shell "https://flakehub.com/f/NixOS/nixpkgs/0.2405.636988#lychee" --command \
+            lychee README.md
