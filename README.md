@@ -32,7 +32,10 @@ It supports the following flake output types:
 
 Flake schemas are not yet supported in Nix.
 To experiment with them, you can use the version of Nix from the [pull request][pr] to upstream.
-Here are some example commands, though please note that the first time you run one of these commands, you will build Nix in its entirety, which is resource instensive and could take a while:
+Below are some example commands.
+
+> [!WARNING]
+> The first time you run one of the commands, you will build Nix in its entirety, which is resource instensive and could take a while.
 
 ```shell
 # Display the flake schema for this repo
