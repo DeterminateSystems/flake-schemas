@@ -59,6 +59,7 @@
                         && builtins.isString app.program
                         && builtins.removeAttrs app [ "type" "program" "meta" ] == { };
                       what = "app";
+                      shortDescription = app.description or "";
                     })
                     apps;
               })
