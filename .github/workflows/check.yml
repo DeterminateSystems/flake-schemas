@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   flake-check:
-    runs-on: UbuntuLatest32Cores128G
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
