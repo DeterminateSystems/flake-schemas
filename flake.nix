@@ -99,48 +99,31 @@
                 let
                   recurse =
                     prefix: attrs:
-                    builtins.listToAttrs (
-                      builtins.concatLists (
-                        mapAttrsToList (
-                          attrName: attrs:
-                          # Necessary to deal with `AAAAAASomeThingsFailToEvaluate` etc. in Nixpkgs.
-                          self.lib.try
-                            (
-                              if attrs.type or null == "derivation" then
-                                [
-                                  {
-                                    name = attrName;
-                                    value = {
-                                      forSystems = [ attrs.system ];
-                                      shortDescription = attrs.meta.description or "";
-                                      derivation = attrs;
-                                      evalChecks.isDerivation = checkDerivation attrs;
-                                      what = "package";
-                                    };
-                                  }
-                                ]
-                              else
-                              # Recurse at the first and second levels, or if the
-                              # recurseForDerivations attribute if set.
-                              if attrs.recurseForDerivations or false then
-                                [
-                                  {
-                                    name = attrName;
-                                    value.children = recurse (prefix + attrName + ".") attrs;
-                                  }
-                                ]
-                              else
-                                [ ]
-                            )
-                            [
-                              {
-                                name = attrName;
-                                value = throw "failed";
-                              }
-                            ]
-                        ) attrs
-                      )
-                    );
+                    builtins.mapAttrs (
+                      attrName: attrs:
+                      # Necessary to deal with `AAAAAASomeThingsFailToEvaluate` etc. in Nixpkgs.
+                      self.lib.try (
+                        if attrs.type or null == "derivation" then
+                          {
+                            forSystems = [ attrs.system ];
+                            shortDescription = attrs.meta.description or "";
+                            derivation = attrs;
+                            evalChecks.isDerivation = checkDerivation attrs;
+                            what = "package";
+                          }
+                        else
+                        # Recurse at the first and second levels, or if the
+                        # recurseForDerivations attribute if set.
+                        if attrs.recurseForDerivations or false then
+                          {
+                            children = recurse (prefix + attrName + ".") attrs;
+                          }
+                        else
+                          {
+                            what = "unknown";
+                          }
+                      ) (throw "failed")
+                    ) attrs;
                 in
                 # The top-level cannot be a derivation.
                 assert packagesForSystem.type or null != "derivation";
