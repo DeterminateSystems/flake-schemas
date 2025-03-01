@@ -3,7 +3,13 @@
 > [!NOTE]
 > Flake schemas are not yet supported in Nix.
 > You can track ongoing work in [this pull request][pr] against the upstream project.
-> Until that merges, you can [experiment with flake schemas](#experimenting-with-flake-schemas) using a candidate version of Nix.
+> Until that merges, you may see this warning:
+>
+> ```sh
+> warning: unknown flake output 'schemas'
+> ```
+>
+> You can also [experiment with flake schemas](#experimenting-with-flake-schemas) using a candidate version of Nix.
 
 This [Nix flake][flakes] provides a set of schema definitions for commonly used flake output types.
 It's used by default for flakes that do not have a `schemas` output.
