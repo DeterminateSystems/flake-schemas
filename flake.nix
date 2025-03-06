@@ -384,6 +384,36 @@
           );
       };
 
+      configurablePackagesSchema = {
+        version = 1;
+        doc = ''
+          The `configurablePackages` flake output contains packages that can be added to a shell using `nix shell`.
+          They can have configurable options.
+        '';
+        roles.nix-build = { };
+        roles.nix-run = { };
+        roles.nix-develop = { };
+        appendSystem = true;
+        defaultAttrPath = [ "default" ];
+        inventory =
+          output:
+          self.lib.mkChildren (
+            builtins.mapAttrs (systemType: packagesForSystem: {
+              forSystems = [ systemType ];
+              children = builtins.mapAttrs (packageName: package: {
+                forSystems = [ systemType ];
+                #shortDescription = package.meta.description or "";
+                derivation = package.applyOptions { };
+                #evalChecks.isDerivation = checkDerivation package;
+                what = "package";
+                isFlakeCheck = false;
+                options = package.options or { };
+                applyOptions = package.applyOptions;
+              }) packagesForSystem;
+            }) output
+          );
+      };
+
     in
 
     {
@@ -434,5 +464,6 @@
       schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
       schemas.bundlers = bundlersSchema;
+      schemas.configurablePackages = configurablePackagesSchema;
     };
 }
