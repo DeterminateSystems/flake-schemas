@@ -6,17 +6,15 @@ on:
     branches: [main]
 
 permissions:
-  id-token: "write"
-  contents: "read"
+  id-token: write
+  contents: read
 
 jobs:
   flake-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-        with:
-          determinate: true
+      - uses: DeterminateSystems/determinate-nix-action@main
       - uses: DeterminateSystems/flakehub-cache-action@main
 
       - name: Check Nix formatting
