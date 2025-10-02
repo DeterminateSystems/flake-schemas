@@ -350,6 +350,7 @@
                   forSystems = [ systemType ];
                   derivation = drv;
                   evalChecks.isDerivation = checkDerivation drv;
+                  isFlakeCheck = false;
                   inherit what;
                 }) systemsForPackage;
               }) output
@@ -386,8 +387,7 @@
                 shortDescription = package.meta.description or "";
                 derivation = package;
                 evalChecks.isDerivation = checkDerivation package;
-                inherit what;
-                isFlakeCheck = isFlakeCheck;
+                inherit isFlakeCheck what;
               }) packagesForSystem;
             }) output
           );
