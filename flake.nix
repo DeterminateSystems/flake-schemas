@@ -336,33 +336,29 @@
           );
       };
 
-      htmlDocsSchema =
-        let
-          # An inventory function that supports ${output}.${package}.${system} instead of the
-          # more standard ${output}.${system}.${package}
-          derivationsInventoryByPackage =
-            what: output:
-            self.lib.mkChildren (
-              builtins.mapAttrs (packageName: systemsForPackage: {
-                forSystems = builtins.attrNames systemsForPackage;
+      htmlDocsSchema = {
+        version = 1;
+        doc = ''
+          The `htmlDocs` flake output defines packages providing static HTML output.
+        '';
+        inventory =
+          output:
+          self.lib.mkChildren (
+            # This requires a special function because this output is structured
+            # htmlDocs.${package}.${system} rather than the usual ${output}.${system}.${package}
+            builtins.mapAttrs (packageName: systemsForPackage: {
+              forSystems = builtins.attrNames systemsForPackage;
 
-                children = builtins.mapAttrs (systemType: drv: {
-                  forSystems = [ systemType ];
-                  derivation = drv;
-                  evalChecks.isDerivation = checkDerivation drv;
-                  isFlakeCheck = false;
-                  inherit what;
-                }) systemsForPackage;
-              }) output
-            );
-        in
-        {
-          version = 1;
-          doc = ''
-            The `htmlDocs` flake output defines packages providing static HTML output.
-          '';
-          inventory = output: derivationsInventoryByPackage "HTML documentation" output;
-        };
+              children = builtins.mapAttrs (systemType: drv: {
+                forSystems = [ systemType ];
+                derivation = drv;
+                evalChecks.isDerivation = checkDerivation drv;
+                isFlakeCheck = false;
+                what = "HTML documentation";
+              }) systemsForPackage;
+            }) output
+          );
+      };
     in
 
     {
