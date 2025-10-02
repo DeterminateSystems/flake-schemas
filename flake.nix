@@ -335,6 +335,33 @@
             }) output
           );
       };
+
+      htmlDocsSchema =
+        let
+          # An inventory function that supports ${package}.${system} instead of the
+          # more standard ${system}.${package}
+          derivationsInventoryByPackage =
+            what: output:
+            self.lib.mkChildren (
+              builtins.mapAttrs (packageName: systemsForPackage: {
+                forSystems = builtins.attrNames systemsForPackage;
+
+                children = builtins.mapAttrs (systemType: drv: {
+                  forSystems = [ systemType ];
+                  derivation = drv;
+                  evalChecks.isDerivation = checkDerivation drv;
+                  what = "HTML documentation";
+                }) systemsForPackage;
+              }) output
+            );
+        in
+        {
+          version = 1;
+          doc = ''
+            The `htmlDocs` flake output defines packages providing static HTML output.
+          '';
+          inventory = output: derivationsInventoryByPackage "HTML documentation" output;
+        };
     in
 
     {
@@ -381,6 +408,7 @@
       schemas.nixosModules = nixosModulesSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
       schemas.homeModules = homeModulesSchema;
+      schemas.htmlDocs = htmlDocsSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
       schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
