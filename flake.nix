@@ -350,7 +350,7 @@
                   forSystems = [ systemType ];
                   derivation = drv;
                   evalChecks.isDerivation = checkDerivation drv;
-                  what = "HTML documentation";
+                  inherit what;
                 }) systemsForPackage;
               }) output
             );
