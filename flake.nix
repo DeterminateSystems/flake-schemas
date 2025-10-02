@@ -338,8 +338,8 @@
 
       htmlDocsSchema =
         let
-          # An inventory function that supports ${package}.${system} instead of the
-          # more standard ${system}.${package}
+          # An inventory function that supports ${output}.${package}.${system} instead of the
+          # more standard ${output}.${system}.${package}
           derivationsInventoryByPackage =
             what: output:
             self.lib.mkChildren (
