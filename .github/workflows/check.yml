@@ -13,7 +13,7 @@ jobs:
   flake-check:
     runs-on: ubuntu-latest
     env:
-      nixpkgs: "0.2505.810656"
+      nixpkgs: "https://flakehub.com/f/NixOS/nixpkgs/0.2505.810656"
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/determinate-nix-action@main
@@ -21,10 +21,10 @@ jobs:
 
       - name: Check Nix formatting
         run: |
-          nix shell "https://flakehub.com/f/NixOS/nixpkgs/${{ env.nixpkgs }}#nixfmt-rfc-style" --command \
+          nix shell "${{ env.nixpkgs }}#nixfmt-rfc-style" --command \
             sh -c "git ls-files '*.nix' | xargs nixfmt --check"
 
       - name: Check links in README
         run: |
-          nix shell "https://flakehub.com/f/NixOS/nixpkgs/${{ env.nixpkgs }}#lychee" --command \
+          nix shell "${{ env.nixpkgs }}#lychee" --command \
             lychee README.md
