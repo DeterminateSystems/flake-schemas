@@ -71,7 +71,6 @@ nix run github:DeterminateSystems/nix-src/flake-schemas -- \
 [apps]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-run#apps
 [aspects]: https://github.com/vic/flake-aspects
 [blog]: https://determinate.systems/posts/flake-schemas
-[branch]: https://github.com/DeterminateSystems/nix-src/tree/flake-schemas
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/LnL7/nix-darwin
 [docker]: https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-dockerTools
