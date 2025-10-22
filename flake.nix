@@ -335,6 +335,42 @@
             }) output
           );
       };
+
+      flakeModulesSchema = {
+        version = 1;
+        doc = ''
+          The `flakeModules` flake output defines [flake-parts](https://flake.parts) modules for use by other flakes.
+          These modules can be imported to extend flake functionality and share configuration patterns.
+        '';
+        inventory =
+          output:
+          self.lib.mkChildren (
+            builtins.mapAttrs (moduleName: module: {
+              what = "flake-parts module";
+              evalChecks.isFunctionOrAttrs = checkModule module;
+            }) output
+          );
+      };
+
+      aspectsSchema = {
+        version = 1;
+        doc = ''
+          The `aspects` flake output defines aspect-oriented modules organized by cross-cutting concerns.
+          Each aspect contains modules for multiple configuration classes (nixos, darwin, homeManager, etc.).
+          This is typically used with [flake-aspects](https://github.com/vic/flake-aspects) which transposes the structure to `modules.<class>.<aspect>`.
+        '';
+        inventory =
+          output:
+          self.lib.mkChildren (
+            builtins.mapAttrs (aspectName: classes: {
+              what = "aspect";
+              children = builtins.mapAttrs (className: module: {
+                what = "${className} module";
+                evalChecks.isFunctionOrAttrs = checkModule module;
+              }) classes;
+            }) output
+          );
+      };
     in
 
     {
@@ -384,5 +420,7 @@
       schemas.darwinConfigurations = darwinConfigurationsSchema;
       schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
+      schemas.flakeModules = flakeModulesSchema;
+      schemas.aspects = aspectsSchema;
     };
 }
