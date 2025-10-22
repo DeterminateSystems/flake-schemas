@@ -17,11 +17,13 @@ It's used by default for flakes that do not have a `schemas` output.
 It supports the following flake output types:
 
 * [`apps`][apps]
+* [`aspects`][aspects]
 * [`checks`][checks]
 * [`darwinConfigurations`][darwin]
 * [`darwinModules`][darwin]
 * [`devShells`][develop]
 * [`dockerImages`][docker]
+* [`flakeModules`][flake-parts]
 * [`formatter`][formatter]
 * [`homeConfigurations`][home]
 * [`homeModules`][home]
@@ -67,13 +69,14 @@ nix run github:DeterminateSystems/nix-src/flake-schemas -- \
 - [Flake schemas][video] &mdash; [Eelco Dolstra][eelco]'s talk on flake schemas at [NixCon 2023][nixcon-2023].
 
 [apps]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-run#apps
+[aspects]: https://github.com/vic/flake-aspects
 [blog]: https://determinate.systems/posts/flake-schemas
-[branch]: https://github.com/DeterminateSystems/nix-src/tree/flake-schemas
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/LnL7/nix-darwin
 [docker]: https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-dockerTools
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
 [eelco]: https://determinate.systems/people/eelco-dolstra
+[flake-parts]: https://flake.parts
 [flakes]: https://zero-to-nix.com/concepts/flakes
 [formatter]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-fmt
 [home]: https://github.com/nix-community/home-manager
