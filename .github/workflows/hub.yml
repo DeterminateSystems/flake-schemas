@@ -2,16 +2,16 @@ name: Publish on FlakeHub
 on:
   push:
     tags:
-      - "v*.*.*"
+      - v*.*.*
 jobs:
   publish:
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
     permissions:
-      id-token: "write"
-      contents: "read"
+      id-token: write
+      contents: read
     steps:
-      - uses: "actions/checkout@v3"
-      - uses: "DeterminateSystems/nix-installer-action@main"
-      - uses: "DeterminateSystems/flakehub-push@main"
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/determinate-nix-action@main
+      - uses: DeterminateSystems/flakehub-push@main
         with:
-          visibility: "public"
+          visibility: public

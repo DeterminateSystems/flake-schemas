@@ -41,7 +41,7 @@ To experiment with them, you can use the version of Nix from the [pull request][
 Below are some example commands.
 
 > [!WARNING]
-> The first time you run one of the commands, you will build Nix in its entirety, which is resource instensive and could take a while.
+> The first time you run one of the commands, you will build Nix in its entirety, which is resource intensive and could take a while.
 
 ```shell
 # Display the flake schema for this repo
