@@ -38,6 +38,9 @@
         doc = ''
           The `apps` output provides commands available via `nix run`.
         '';
+        roles.nix-run = { };
+        appendSystem = true;
+        defaultAttrPath = [ "default" ];
         inventory =
           output:
           self.lib.mkChildren (
@@ -73,6 +76,11 @@
         doc = ''
           The `packages` flake output contains packages that can be added to a shell using `nix shell`.
         '';
+        roles.nix-build = { };
+        roles.nix-run = { };
+        roles.nix-develop = { };
+        appendSystem = true;
+        defaultAttrPath = [ "default" ];
         inventory = self.lib.derivationsInventory "package" false;
       };
 
@@ -90,6 +98,9 @@
           The `legacyPackages` flake output is similar to `packages` but different in that it can be nested and thus contain attribute sets that contain more packages.
           Since enumerating packages in nested attribute sets can be inefficient, you should favor `packages` over `legacyPackages`.
         '';
+        roles.nix-build = { };
+        roles.nix-run = { };
+        appendSystem = true;
         inventory =
           output:
           self.lib.mkChildren (
@@ -137,6 +148,7 @@
         doc = ''
           The `checks` flake output contains derivations that will be built by `nix flake check`.
         '';
+        # FIXME: add role
         inventory = self.lib.derivationsInventory "CI test" true;
       };
 
@@ -145,6 +157,9 @@
         doc = ''
           The `devShells` flake output contains derivations that provide a development environment for `nix develop`.
         '';
+        roles.nix-develop = { };
+        appendSystem = true;
+        defaultAttrPath = [ "default" ];
         inventory = self.lib.derivationsInventory "development environment" false;
       };
 
@@ -153,6 +168,9 @@
         doc = ''
           The `formatter` output specifies the package to use to format the project.
         '';
+        roles.nix-fmt = { };
+        appendSystem = true;
+        defaultAttrPath = [ ];
         inventory =
           output:
           self.lib.mkChildren (
@@ -172,6 +190,8 @@
         doc = ''
           The `templates` output provides project templates.
         '';
+        roles.nix-template = { };
+        defaultAttrPath = [ "default" ];
         inventory =
           output:
           self.lib.mkChildren (
@@ -335,6 +355,35 @@
             }) output
           );
       };
+
+      bundlersSchema = {
+        version = 1;
+        doc = ''
+          The `bundlers` flake output defines ["bundlers"](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-bundle) that transform derivation outputs into other formats, typically self-extracting executables or container images.
+        '';
+        roles.nix-bundler = { };
+        appendSystem = true;
+        defaultAttrPath = [ "default" ];
+        inventory =
+          output:
+          self.lib.mkChildren (
+            builtins.mapAttrs (
+              system: bundlers:
+              let
+                forSystems = [ system ];
+              in
+              {
+                inherit forSystems;
+                children = builtins.mapAttrs (bundlerName: bundler: {
+                  inherit forSystems;
+                  evalChecks.isValidBundler = builtins.isFunction bundler;
+                  what = "bundler";
+                }) bundlers;
+              }
+            ) output
+          );
+      };
+
     in
 
     {
@@ -384,5 +433,6 @@
       schemas.darwinConfigurations = darwinConfigurationsSchema;
       schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
+      schemas.bundlers = bundlersSchema;
     };
 }
