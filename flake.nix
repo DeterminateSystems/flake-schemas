@@ -359,7 +359,7 @@
       bundlersSchema = {
         version = 1;
         doc = ''
-          The `bundlers` flake output defines ["bundlers"](https://nix.dev/manual/nix/2.26/command-ref/new-cli/nix3-bundle) that transform derivation outputs into other formats, typically self-extracting executables or container images.
+          The `bundlers` flake output defines ["bundlers"](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-bundle) that transform derivation outputs into other formats, typically self-extracting executables or container images.
         '';
         roles.nix-bundler = { };
         appendSystem = true;
