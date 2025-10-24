@@ -1,0 +1,22 @@
+{
+  "packages": {
+    "doc": "The `packages` flake output contains packages that can be added to a shell using `nix shell`.\n",
+    "output": {
+      "children": {
+        "aarch64-linux": {
+          "filtered": true
+        },
+        "x86_64-linux": {
+          "children": {
+            "hello": {
+              "derivationName": "hello-2.12.1",
+              "leaf": true,
+              "shortDescription": "Program that produces a familiar, friendly greeting",
+              "what": "package"
+            }
+          }
+        }
+      }
+    }
+  }
+}

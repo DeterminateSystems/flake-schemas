@@ -179,7 +179,7 @@
               shortDescription = formatter.meta.description or "";
               derivation = formatter;
               evalChecks.isDerivation = checkDerivation formatter;
-              what = "package";
+              what = "formatter";
               isFlakeCheck = false;
             }) output
           );

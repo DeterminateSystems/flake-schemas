@@ -1,0 +1,22 @@
+{
+  "foo": {
+    "doc": "The `foo` output allows you to define foobars.\n",
+    "output": {
+      "children": {
+        "bar": {
+          "leaf": true,
+          "shortDescription": "hello",
+          "what": "foobar"
+        },
+        "xyzzy": {
+          "leaf": true,
+          "shortDescription": "world",
+          "what": "foobar"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "unknown": true
+  }
+}

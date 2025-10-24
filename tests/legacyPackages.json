@@ -1,0 +1,43 @@
+{
+  "legacyPackages": {
+    "doc": "The `legacyPackages` flake output is similar to `packages` but different in that it can be nested and thus contain attribute sets that contain more packages.\nSince enumerating packages in nested attribute sets can be inefficient, you should favor `packages` over `legacyPackages`.\n",
+    "output": {
+      "children": {
+        "x86_64-linux": {
+          "children": {
+            "foo": {
+              "leaf": true,
+              "what": "unknown"
+            },
+            "hello": {
+              "derivationName": "hello-2.12.1",
+              "leaf": true,
+              "shortDescription": "Program that produces a familiar, friendly greeting",
+              "what": "package"
+            },
+            "pythonPackages": {
+              "children": {
+                "lxml": {
+                  "derivationName": "python2.7-lxml-5.3.1",
+                  "leaf": true,
+                  "shortDescription": "Pythonic binding for the libxml2 and libxslt libraries",
+                  "what": "package"
+                },
+                "python": {
+                  "derivationName": "python-2.7.18.8",
+                  "leaf": true,
+                  "shortDescription": "High-level dynamically-typed programming language",
+                  "what": "package"
+                },
+                "recurseForDerivations": {
+                  "leaf": true,
+                  "what": "unknown"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
