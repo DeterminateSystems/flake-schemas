@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "doc": "The `checks` flake output contains derivations that will be built by `nix flake check`.\n",
+    "output": {
+      "children": {
+        "aarch64-linux": {
+          "filtered": true
+        },
+        "x86_64-linux": {
+          "children": {
+            "hello": {
+              "derivationName": "hello-2.12.1",
+              "leaf": true,
+              "shortDescription": "Program that produces a familiar, friendly greeting",
+              "what": "CI test"
+            }
+          }
+        }
+      }
+    }
+  }
+}

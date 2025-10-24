@@ -61,6 +61,18 @@ nix run github:DeterminateSystems/nix-src/flake-schemas -- \
   flake show --json "https://flakehub.com/f/NixOS/nixpkgs/*"
 ```
 
+## Development
+
+After making changes to `flake-schemas`, be sure to run the tests:
+```
+nix flake check -L ./tests
+```
+
+To apply formatting, run the following:
+```
+nix develop ./tests -c treefmt
+```
+
 ## Read more
 
 - [Flake schemas: Making flake outputs extensible][blog] &mdash; the blog post introducing flake schemas.
