@@ -7,68 +7,90 @@
   outputs =
     {
       self,
-      flake-schemas,
-      nix,
-      nixpkgs,
-    }:
+      ...
+    }@inputs:
+    let
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+
+      forEachSupportedSystem =
+        f:
+        inputs.nixpkgs.lib.genAttrs supportedSystems (
+          system:
+          f {
+            inherit system;
+            pkgs = import inputs.nixpkgs {
+              inherit system;
+            };
+          }
+        );
+    in
     {
+      devShells = forEachSupportedSystem (
+        { system, ... }:
+        {
+          default = self.checks.${system}.formatting;
+        }
+      );
 
-      devShells.x86_64-linux.default = self.checks.x86_64-linux.formatting;
+      checks = forEachSupportedSystem (
+        { pkgs, system }:
+        {
+          formatting =
+            pkgs.runCommand "formatting"
+              {
+                buildInputs = with pkgs; [ nixfmt-tree ];
+                src = inputs.flake-schemas;
+              }
+              ''
+                treefmt --ci "$src"
+                mkdir "$out"
+              '';
 
-      checks.x86_64-linux.formatting =
-        with nixpkgs.legacyPackages.x86_64-linux;
+          checkSchemas =
+            pkgs.runCommand "check-schemas"
+              {
+                buildInputs = with pkgs; [
+                  inputs.nix.packages.${system}.nix
+                  writableTmpDirAsHomeHook
+                  wdiff
+                  jq
+                ];
+                src = inputs.flake-schemas;
+              }
+              ''
+                set -o pipefail
 
-        runCommand "formatting"
-          {
-            buildInputs = [ nixfmt-tree ];
-            src = flake-schemas;
-          }
-          ''
-            treefmt --ci "$src"
-            mkdir "$out"
-          '';
+                # FIXME: this is slow, figure out a faster way (like the overlay store).
+                echo "Copying flake inputs for the tests..."
+                nix store add --offline --name source ${builtins.fetchTree ((builtins.fromJSON (builtins.readFile ./nixos/flake.lock)).nodes.nixpkgs.locked)}
 
-      checks.x86_64-linux.checkSchemas =
-        with nixpkgs.legacyPackages.x86_64-linux;
+                # Run the `nix flake show` and `nix flake check` tests.
+                for json_exp in $src/tests/*.json; do
+                  flake=$(basename "$json_exp" .json)
 
-        runCommand "check-schemas"
-          {
-            buildInputs = [
-              nix.packages.x86_64-linux.nix
-              writableTmpDirAsHomeHook
-              wdiff
-              jq
-            ];
-            src = flake-schemas;
-          }
-          ''
-            set -o pipefail
+                  echo "Running 'nix flake show' on '$flake'..."
+                  nix flake show --offline --json --legacy --default-flake-schemas "$src" "$src/tests/$flake" | jq > "$flake.json"
+                  wdiff "$json_exp" "$flake.json"
+                  printf "\n"
 
-            # FIXME: this is slow, figure out a faster way (like the overlay store).
-            echo "Copying flake inputs for the tests..."
-            nix store add --offline --name source ${builtins.fetchTree ((builtins.fromJSON (builtins.readFile ./nixos/flake.lock)).nodes.nixpkgs.locked)}
+                  echo "Running 'nix flake check' on '$flake'..."
+                  # FIXME: check what checks would have been done without `--no-build`.
+                  if ! nix flake check --offline --no-build --default-flake-schemas "$src" "$src/tests/$flake" --no-eval-cache 2>&1 | (grep -v '^evaluating ' || true) | tee "$flake.check-err"; then
+                    if [[ -e "$src/tests/$flake.check-err" ]]; then
+                      wdiff "$src/tests/$flake.check-err" "$flake.check-err"
+                    else
+                      exit 1
+                    fi
+                  fi
+                done
 
-            # Run the `nix flake show` and `nix flake check` tests.
-            for json_exp in $src/tests/*.json; do
-              flake=$(basename "$json_exp" .json)
-
-              echo "Running 'nix flake show' on '$flake'..."
-              nix flake show --offline --json --legacy --default-flake-schemas "$src" "$src/tests/$flake" | jq > "$flake.json"
-              wdiff "$json_exp" "$flake.json"
-              printf "\n"
-
-              echo "Running 'nix flake check' on '$flake'..."
-              # FIXME: check what checks would have been done without `--no-build`.
-              if ! nix flake check --offline --no-build --default-flake-schemas "$src" "$src/tests/$flake" --no-eval-cache 2>&1 | (grep -v '^evaluating ' || true) | tee "$flake.check-err"; then
-                if [[ -e "$src/tests/$flake.check-err" ]]; then
-                  wdiff "$src/tests/$flake.check-err" "$flake.check-err"
-                else
-                  exit 1
-                fi
-              fi
-            done
-
-            mkdir "$out"
-          '';
+                mkdir "$out"
+              '';
+        }
+      );
     };
 }
