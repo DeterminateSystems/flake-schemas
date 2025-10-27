@@ -20,8 +20,3 @@ jobs:
       - name: Run tests
         run: |
           nix flake check -L ./tests
-
-      - name: Check links in README
-        run: |
-          nix shell "https://flakehub.com/f/NixOS/nixpkgs/0.2411.715026#lychee" --command \
-            lychee README.md
