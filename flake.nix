@@ -239,6 +239,22 @@
           recurse "" output;
       };
 
+      libSchema = {
+        version = 1;
+        doc = ''
+          The `lib` flake output exposes arbitrary Nix terms.
+        '';
+        inventory = let
+          processValue = value: let
+            what = builtins.typeOf value;
+          in
+          if what == "set" then
+            self.lib.mkChildren
+            (builtins.mapAttrs (name: processValue) value)
+          else {inherit what;};
+        in processValue;
+      };
+
       overlaysSchema = {
         version = 1;
         doc = ''
@@ -425,6 +441,7 @@
       schemas.formatter = formatterSchema;
       schemas.templates = templatesSchema;
       schemas.hydraJobs = hydraJobsSchema;
+      schemas.lib = libSchema;
       schemas.overlays = overlaysSchema;
       schemas.nixosConfigurations = nixosConfigurationsSchema;
       schemas.nixosModules = nixosModulesSchema;
