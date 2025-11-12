@@ -1,0 +1,14 @@
+{
+  "nixosConfigurations": {
+    "doc": "The `nixosConfigurations` flake output defines [NixOS system configurations](https://nixos.org/manual/nixos/stable/#ch-configuration).\n",
+    "output": {
+      "children": {
+        "machine": {
+          "derivationName": "nixos-system-nixos-25.05.20251022.c8aa8cc",
+          "leaf": true,
+          "what": "NixOS configuration"
+        }
+      }
+    }
+  }
+}
