@@ -356,6 +356,30 @@
           );
       };
 
+      htmlDocsSchema = {
+        version = 1;
+        doc = ''
+          The `htmlDocs` flake output defines packages providing static HTML output.
+        '';
+        inventory =
+          output:
+          self.lib.mkChildren (
+            # This requires a special function because this output is structured
+            # htmlDocs.${package}.${system} rather than the usual ${output}.${system}.${package}
+            builtins.mapAttrs (packageName: systemsForPackage: {
+              forSystems = builtins.attrNames systemsForPackage;
+
+              children = builtins.mapAttrs (systemType: drv: {
+                forSystems = [ systemType ];
+                derivation = drv;
+                evalChecks.isDerivation = checkDerivation drv;
+                isFlakeCheck = false;
+                what = "HTML documentation";
+              }) systemsForPackage;
+            }) output
+          );
+      };
+
       bundlersSchema = {
         version = 1;
         doc = ''
@@ -408,8 +432,7 @@
                 shortDescription = package.meta.description or "";
                 derivation = package;
                 evalChecks.isDerivation = checkDerivation package;
-                inherit what;
-                isFlakeCheck = isFlakeCheck;
+                inherit isFlakeCheck what;
               }) packagesForSystem;
             }) output
           );
@@ -430,6 +453,7 @@
       schemas.nixosModules = nixosModulesSchema;
       schemas.homeConfigurations = homeConfigurationsSchema;
       schemas.homeModules = homeModulesSchema;
+      schemas.htmlDocs = htmlDocsSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
       schemas.darwinModules = darwinModulesSchema;
       schemas.dockerImages = dockerImagesSchema;
