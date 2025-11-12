@@ -21,7 +21,6 @@ It supports the following flake output types:
 * [`darwinConfigurations`][darwin]
 * [`darwinModules`][darwin]
 * [`devShells`][develop]
-* [`dockerImages`][docker]
 * [`formatter`][formatter]
 * [`homeConfigurations`][home]
 * [`homeModules`][home]
@@ -29,6 +28,7 @@ It supports the following flake output types:
 * [`legacyPackages`][legacy]
 * [`nixosConfigurations`][nixos]
 * [`nixosModules`][nixosmodules]
+* [`ociImages`][oci]
 * [`overlays`][overlays]
 * [`packages`][packages]
 * `schemas`
@@ -83,7 +83,6 @@ nix develop ./tests -c treefmt
 [branch]: https://github.com/DeterminateSystems/nix-src/tree/flake-schemas
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/LnL7/nix-darwin
-[docker]: https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-dockerTools
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
 [eelco]: https://determinate.systems/people/eelco-dolstra
 [flakes]: https://zero-to-nix.com/concepts/flakes
@@ -94,6 +93,7 @@ nix develop ./tests -c treefmt
 [nixcon-2023]: https://2023.nixcon.org
 [nixos]: https://github.com/NixOS/nixpkgs/tree/master/nixos
 [nixosmodules]: https://nixos.wiki/wiki/NixOS_modules
+[oci]: https://opencontainers.org
 [overlays]: https://nixos.wiki/wiki/Overlays
 [packages]: https://search.nixos.org/packages
 [pr]: https://github.com/NixOS/nix/pull/8892

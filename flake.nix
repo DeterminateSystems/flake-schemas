@@ -84,12 +84,12 @@
         inventory = self.lib.derivationsInventory "package" false;
       };
 
-      dockerImagesSchema = {
+      ociImagesSchema = {
         version = 1;
         doc = ''
-          The `dockerImages` flake output contains derivations that build valid Docker images.
+          The `ociImages` flake output contains derivations that build valid Open Container Initiative images.
         '';
-        inventory = self.lib.derivationsInventory "Docker image" false;
+        inventory = self.lib.derivationsInventory "OCI image" false;
       };
 
       legacyPackagesSchema = {
@@ -432,7 +432,7 @@
       schemas.homeModules = homeModulesSchema;
       schemas.darwinConfigurations = darwinConfigurationsSchema;
       schemas.darwinModules = darwinModulesSchema;
-      schemas.dockerImages = dockerImagesSchema;
+      schemas.ociImages = ociImagesSchema;
       schemas.bundlers = bundlersSchema;
     };
 }
