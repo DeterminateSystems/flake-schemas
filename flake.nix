@@ -328,7 +328,7 @@
       darwinConfigurationsSchema = {
         version = 1;
         doc = ''
-          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/LnL7/nix-darwin).
+          The `darwinConfigurations` flake output defines [nix-darwin configurations](https://github.com/nix-darwin/nix-darwin).
         '';
         inventory =
           output:
@@ -344,7 +344,7 @@
       darwinModulesSchema = {
         version = 1;
         doc = ''
-          The `darwinModules` flake output defines importable [nix-darwin modules](https://github.com/LnL7/nix-darwin).
+          The `darwinModules` flake output defines importable [nix-darwin modules](https://github.com/nix-darwin/nix-darwin).
         '';
         inventory =
           output:
