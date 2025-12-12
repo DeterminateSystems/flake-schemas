@@ -82,7 +82,7 @@ nix develop ./tests -c treefmt
 [blog]: https://determinate.systems/posts/flake-schemas
 [branch]: https://github.com/DeterminateSystems/nix-src/tree/flake-schemas
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
-[darwin]: https://github.com/LnL7/nix-darwin
+[darwin]: https://github.com/nix-darwin/nix-darwin
 [docker]: https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-dockerTools
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
 [eelco]: https://determinate.systems/people/eelco-dolstra
