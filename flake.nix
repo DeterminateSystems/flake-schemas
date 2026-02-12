@@ -79,6 +79,7 @@
         roles.nix-build = { };
         roles.nix-run = { };
         roles.nix-develop = { };
+        roles.nix-search = { };
         appendSystem = true;
         defaultAttrPath = [ "default" ];
         inventory = self.lib.derivationsInventory "package" false;
@@ -100,6 +101,7 @@
         '';
         roles.nix-build = { };
         roles.nix-run = { };
+        roles.nix-search = { };
         appendSystem = true;
         inventory =
           output:
