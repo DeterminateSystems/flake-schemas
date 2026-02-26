@@ -410,7 +410,7 @@
                 shortDescription = package.meta.description or "";
                 derivation = package;
                 evalChecks.isDerivation = checkDerivation package;
-                inherit what;
+                what = "${what} '${package.name}'";
                 isFlakeCheck = isFlakeCheck;
               }) packagesForSystem;
             }) output
