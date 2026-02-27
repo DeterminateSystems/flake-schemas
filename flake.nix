@@ -6,9 +6,6 @@
     let
       mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
-      checkDerivation =
-        drv: drv.type or null == "derivation" && drv ? drvPath && drv ? name && builtins.isString drv.name;
-
       checkModule = module: builtins.isAttrs module || builtins.isFunction module;
 
       schemasSchema = {
@@ -120,8 +117,7 @@
                           {
                             forSystems = [ attrs.system ];
                             shortDescription = attrs.meta.description or "";
-                            derivation = attrs;
-                            evalChecks.isDerivation = checkDerivation attrs;
+                            derivationAttrPath = [ ];
                             what = "package";
                           }
                         else
@@ -179,8 +175,7 @@
             builtins.mapAttrs (system: formatter: {
               forSystems = [ system ];
               shortDescription = formatter.meta.description or "";
-              derivation = formatter;
-              evalChecks.isDerivation = checkDerivation formatter;
+              derivationAttrPath = [ ];
               what = "formatter";
               isFlakeCheck = false;
             }) output
@@ -227,8 +222,7 @@
                     {
                       forSystems = [ attrs.system ];
                       shortDescription = attrs.meta.description or "";
-                      derivation = attrs;
-                      evalChecks.isDerivation = checkDerivation attrs;
+                      derivationAttrPath = [ ];
                       what = "Hydra CI test";
                     }
                   else
@@ -275,7 +269,12 @@
           self.lib.mkChildren (
             builtins.mapAttrs (configName: machine: {
               what = "NixOS configuration";
-              derivation = machine.config.system.build.toplevel;
+              derivationAttrPath = [
+                "config"
+                "system"
+                "build"
+                "toplevel"
+              ];
               forSystems = [ machine.pkgs.stdenv.system ];
             }) output
           );
@@ -306,7 +305,7 @@
           self.lib.mkChildren (
             builtins.mapAttrs (configName: this: {
               what = "Home Manager configuration";
-              derivation = this.activationPackage;
+              derivationAttrPath = [ "activationPackage" ];
               forSystems = [ this.activationPackage.system ];
             }) output
           );
@@ -337,7 +336,7 @@
           self.lib.mkChildren (
             builtins.mapAttrs (configName: this: {
               what = "nix-darwin configuration";
-              derivation = this.system;
+              derivationAttrPath = [ "system" ];
               forSystems = [ this.system.system ];
             }) output
           );
@@ -408,8 +407,7 @@
               children = builtins.mapAttrs (packageName: package: {
                 forSystems = [ systemType ];
                 shortDescription = package.meta.description or "";
-                derivation = package;
-                evalChecks.isDerivation = checkDerivation package;
+                derivationAttrPath = [ ];
                 inherit what;
                 isFlakeCheck = isFlakeCheck;
               }) packagesForSystem;
