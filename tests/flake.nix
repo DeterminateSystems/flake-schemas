@@ -81,7 +81,8 @@
                   # FIXME: check what checks would have been done without `--no-build`.
                   if ! nix flake check --offline --no-build --default-flake-schemas "$src" "$src/tests/$flake" --no-eval-cache 2>&1 | (grep -v '^evaluating ' || true) | tee "$flake.check-err"; then
                     if [[ -e "$src/tests/$flake.check-err" ]]; then
-                      wdiff "$src/tests/$flake.check-err" "$flake.check-err"
+                      # `nix flake check` processes attributes in an undefined order, so sort the output.
+                      wdiff <(sort < $src/tests/$flake.check-err) <(sort < "$flake.check-err")
                     else
                       exit 1
                     fi

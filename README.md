@@ -64,25 +64,26 @@ nix run github:DeterminateSystems/nix-src/flake-schemas -- \
 ## Development
 
 After making changes to `flake-schemas`, be sure to run the tests:
-```
+
+```text
 nix flake check -L ./tests
 ```
 
 To apply formatting, run the following:
-```
+
+```text
 nix develop ./tests -c treefmt
 ```
 
 ## Read more
 
-- [Flake schemas: Making flake outputs extensible][blog] &mdash; the blog post introducing flake schemas.
-- [Flake schemas][video] &mdash; [Eelco Dolstra][eelco]'s talk on flake schemas at [NixCon 2023][nixcon-2023].
+* [Flake schemas: Making flake outputs extensible][blog] &mdash; the blog post introducing flake schemas.
+* [Flake schemas][video] &mdash; [Eelco Dolstra][eelco]'s talk on flake schemas at [NixCon 2023][nixcon-2023].
 
 [apps]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-run#apps
 [blog]: https://determinate.systems/posts/flake-schemas
-[branch]: https://github.com/DeterminateSystems/nix-src/tree/flake-schemas
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
-[darwin]: https://github.com/LnL7/nix-darwin
+[darwin]: https://github.com/nix-darwin/nix-darwin
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
 [eelco]: https://determinate.systems/people/eelco-dolstra
 [flakes]: https://zero-to-nix.com/concepts/flakes
