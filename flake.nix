@@ -373,7 +373,6 @@
               children = builtins.mapAttrs (systemType: drv: {
                 forSystems = [ systemType ];
                 derivation = drv;
-                evalChecks.isDerivation = checkDerivation drv;
                 isFlakeCheck = false;
                 what = "HTML documentation";
               }) systemsForPackage;
