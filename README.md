@@ -17,6 +17,7 @@ It's used by default for flakes that do not have a `schemas` output.
 It supports the following flake output types:
 
 * [`apps`][apps]
+* [`bundlers`][bundlers]
 * [`checks`][checks]
 * [`darwinConfigurations`][darwin]
 * [`darwinModules`][darwin]
@@ -82,6 +83,7 @@ nix develop ./tests -c treefmt
 
 [apps]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-run#apps
 [blog]: https://determinate.systems/posts/flake-schemas
+[bundlers]: https://github.com/nix-community/nix-bundle
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/nix-darwin/nix-darwin
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
