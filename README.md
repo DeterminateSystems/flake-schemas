@@ -17,11 +17,11 @@ It's used by default for flakes that do not have a `schemas` output.
 It supports the following flake output types:
 
 * [`apps`][apps]
+* [`bundlers`][bundlers]
 * [`checks`][checks]
 * [`darwinConfigurations`][darwin]
 * [`darwinModules`][darwin]
 * [`devShells`][develop]
-* [`dockerImages`][docker]
 * [`formatter`][formatter]
 * [`homeConfigurations`][home]
 * [`homeModules`][home]
@@ -29,6 +29,7 @@ It supports the following flake output types:
 * [`legacyPackages`][legacy]
 * [`nixosConfigurations`][nixos]
 * [`nixosModules`][nixosmodules]
+* [`ociImages`][oci]
 * [`overlays`][overlays]
 * [`packages`][packages]
 * `schemas`
@@ -64,26 +65,27 @@ nix run github:DeterminateSystems/nix-src/flake-schemas -- \
 ## Development
 
 After making changes to `flake-schemas`, be sure to run the tests:
-```
+
+```text
 nix flake check -L ./tests
 ```
 
 To apply formatting, run the following:
-```
+
+```text
 nix develop ./tests -c treefmt
 ```
 
 ## Read more
 
-- [Flake schemas: Making flake outputs extensible][blog] &mdash; the blog post introducing flake schemas.
-- [Flake schemas][video] &mdash; [Eelco Dolstra][eelco]'s talk on flake schemas at [NixCon 2023][nixcon-2023].
+* [Flake schemas: Making flake outputs extensible][blog] &mdash; the blog post introducing flake schemas.
+* [Flake schemas][video] &mdash; [Eelco Dolstra][eelco]'s talk on flake schemas at [NixCon 2023][nixcon-2023].
 
 [apps]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-run#apps
 [blog]: https://determinate.systems/posts/flake-schemas
-[branch]: https://github.com/DeterminateSystems/nix-src/tree/flake-schemas
+[bundlers]: https://github.com/nix-community/nix-bundle
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/nix-darwin/nix-darwin
-[docker]: https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-dockerTools
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
 [eelco]: https://determinate.systems/people/eelco-dolstra
 [flakes]: https://zero-to-nix.com/concepts/flakes
@@ -94,6 +96,7 @@ nix develop ./tests -c treefmt
 [nixcon-2023]: https://2023.nixcon.org
 [nixos]: https://github.com/NixOS/nixpkgs/tree/master/nixos
 [nixosmodules]: https://nixos.wiki/wiki/NixOS_modules
+[oci]: https://opencontainers.org
 [overlays]: https://nixos.wiki/wiki/Overlays
 [packages]: https://search.nixos.org/packages
 [pr]: https://github.com/NixOS/nix/pull/8892
