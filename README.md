@@ -55,4 +55,3 @@ nix develop ./tests -c treefmt
 [overlays]: https://nixos.wiki/wiki/Overlays
 [packages]: https://search.nixos.org/packages
 [templates]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-flake-init
-[video]: https://www.youtube.com/watch?v=ChaJY0V4ElM
