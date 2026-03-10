@@ -6,7 +6,12 @@
     let
       mapAttrsToList = f: attrs: map (name: f name attrs.${name}) (builtins.attrNames attrs);
 
-      checkModule = module: builtins.isAttrs module || builtins.isFunction module;
+      checkModule =
+        module_:
+        let
+          module = if builtins.isPath module_ then import module_ else module_;
+        in
+        builtins.isAttrs module || builtins.isFunction module;
 
       schemasSchema = {
         version = 1;
@@ -105,6 +110,7 @@
           self.lib.mkChildren (
             builtins.mapAttrs (systemType: packagesForSystem: {
               forSystems = [ systemType ];
+              isLegacy = true;
               children =
                 let
                   recurse =
