@@ -105,6 +105,7 @@
           self.lib.mkChildren (
             builtins.mapAttrs (systemType: packagesForSystem: {
               forSystems = [ systemType ];
+              isLegacy = true;
               children =
                 let
                   recurse =
