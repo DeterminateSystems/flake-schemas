@@ -1,0 +1,15 @@
+{
+  "inventory": {
+    "overlays": {
+      "doc": "The `overlays` flake output defines [\"overlays\"](https://nixos.org/manual/nixpkgs/stable/#chap-overlays) that can be plugged into Nixpkgs.\nOverlays add additional packages or modify or replace existing packages.\n",
+      "output": {
+        "children": {
+          "example": {
+            "what": "Nixpkgs overlay"
+          }
+        }
+      }
+    }
+  },
+  "version": 2
+}
