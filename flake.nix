@@ -257,10 +257,7 @@
                 # Nixpkgs.  But we don't have access to a nixpkgs
                 # flake here. Maybe this schema should be moved to the
                 # nixpkgs flake, where it does have access.
-                if !builtins.isFunction overlay then
-                  throw "overlay is not a function, but a set instead"
-                else
-                  builtins.isAttrs (overlay { } { });
+                if !builtins.isFunction overlay then throw "overlay is not a function, but a set instead" else true;
             }) output
           );
       };
