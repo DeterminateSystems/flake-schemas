@@ -1,0 +1,28 @@
+{
+  "inventory": {
+    "devShell": {
+      "doc": "The `devShell` flake output contains a derivation that provides a development environment for `nix develop`.\n",
+      "output": {
+        "children": {
+          "x86_64-linux": {
+            "filtered": true
+          }
+        }
+      }
+    },
+    "lib": {
+      "unknown": true
+    },
+    "packages": {
+      "doc": "The `packages` flake output contains packages that can be added to a shell using `nix shell`.\n",
+      "output": {
+        "children": {
+          "x86_64-linux": {
+            "filtered": true
+          }
+        }
+      }
+    }
+  },
+  "version": 2
+}
