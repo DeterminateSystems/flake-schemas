@@ -89,6 +89,20 @@
                   fi
                 done
 
+                if [ $system = "x86_64-linux" ]; then
+                  # Check that `nix develop` reads devShell.system if no other option is available
+                  nix develop --system x86_64-linux --offline --default-flake-schemas "$src" "$src/tests/devShell" --no-eval-cache 2>&1 | tee /dev/stderr | grep -q "devShell-legacy"
+
+                  # Check that `nix develop` reads devShells.system.default over devShell.system
+                  nix develop --system x86_64-linux --offline --default-flake-schemas "$src" "$src/tests/devShellWithDevShells" --no-eval-cache 2>&1 | tee /dev/stderr | grep -q "devShells-preferred-over-legacy"
+
+                  # Check that `nix develop` reads devShell.system when packages.system.default is also available
+                  nix develop --system x86_64-linux --offline --default-flake-schemas "$src" "$src/tests/devShellWithPackages" --no-eval-cache 2>&1 | tee /dev/stderr | grep -q "devShell-legacy-preferred-over-packages"
+
+                  # Check that `nix develop` reads devShells.system.default over devShell.system and packages.
+                  nix develop --system x86_64-linux --offline --default-flake-schemas "$src" "$src/tests/devShellWithDevShellsAndPackages" --no-eval-cache 2>&1 | tee /dev/stderr | grep -q "devShells-preferred-over-legacy-and-packages"
+                fi
+
                 mkdir "$out"
               '';
         }

@@ -167,6 +167,26 @@
         inventory = self.lib.derivationsInventory "development environment" false;
       };
 
+      devShellSchema = {
+        version = 1;
+        doc = ''
+          The `devShell` flake output contains a derivation that provides a development environment for `nix develop`.
+        '';
+        roles.nix-develop = { };
+        appendSystem = true;
+        defaultAttrPath = [ ];
+        inventory = output:
+          self.lib.mkChildren (
+            builtins.mapAttrs (systemType: devShellForSystem: {
+              forSystems = [ systemType ];
+              shortDescription = devShellForSystem.meta.description or "";
+              derivationAttrPath = [ ];
+              what = "development environment";
+              isFlakeCheck = false;
+            }) output
+          );
+      };
+
       formatterSchema = {
         version = 1;
         doc = ''
@@ -427,6 +447,7 @@
       schemas.packages = packagesSchema;
       schemas.legacyPackages = legacyPackagesSchema;
       schemas.checks = checksSchema;
+      schemas.devShell = devShellSchema;
       schemas.devShells = devShellsSchema;
       schemas.formatter = formatterSchema;
       schemas.templates = templatesSchema;
