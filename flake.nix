@@ -13,6 +13,34 @@
         in
         builtins.isAttrs module || builtins.isFunction module;
 
+      mkApp = system: app: {
+        forSystems = [ system ];
+        evalChecks.isValidApp =
+          app ? type
+          && app.type == "app"
+          && app ? program
+          && builtins.isString app.program
+          &&
+            builtins.removeAttrs app [
+              "type"
+              "program"
+              "meta"
+            ] == { };
+        what = "app";
+        shortDescription = app.meta.description or "";
+      };
+
+      mkPackage = isFlakeCheck: what: system: package: {
+        forSystems = [ system ];
+        shortDescription = package.meta.description or "";
+        derivationAttrPath = [ ];
+        inherit what isFlakeCheck;
+      };
+
+      singleDerivationInventory =
+        what: isFlakeCheck: output:
+        self.lib.mkChildren (builtins.mapAttrs (mkPackage isFlakeCheck what) output);
+
       schemasSchema = {
         version = 1;
         doc = ''
@@ -46,31 +74,22 @@
         inventory =
           output:
           self.lib.mkChildren (
-            builtins.mapAttrs (
-              system: apps:
-              let
-                forSystems = [ system ];
-              in
-              {
-                inherit forSystems;
-                children = builtins.mapAttrs (appName: app: {
-                  inherit forSystems;
-                  evalChecks.isValidApp =
-                    app ? type
-                    && app.type == "app"
-                    && app ? program
-                    && builtins.isString app.program
-                    &&
-                      builtins.removeAttrs app [
-                        "type"
-                        "program"
-                        "meta"
-                      ] == { };
-                  what = "app";
-                }) apps;
-              }
-            ) output
+            builtins.mapAttrs (system: apps: {
+              forSystems = [ system ];
+              children = builtins.mapAttrs (appName: app: mkApp system app) apps;
+            }) output
           );
+      };
+
+      defaultAppSchema = {
+        version = 1;
+        doc = ''
+          **DEPRECATED**. Use `apps.<system>.default` instead.
+        '';
+        roles.nix-run = { };
+        appendSystem = true;
+        defaultAttrPath = [ ];
+        inventory = output: self.lib.mkChildren (builtins.mapAttrs mkApp output);
       };
 
       packagesSchema = {
@@ -85,6 +104,20 @@
         appendSystem = true;
         defaultAttrPath = [ "default" ];
         inventory = self.lib.derivationsInventory "package" false;
+      };
+
+      defaultPackageSchema = {
+        version = 1;
+        doc = ''
+          **DEPRECATED**. Use `packages.<system>.default` instead.
+        '';
+        roles.nix-build = { };
+        roles.nix-run = { };
+        roles.nix-develop = { };
+        roles.nix-search = { };
+        appendSystem = true;
+        defaultAttrPath = [ ];
+        inventory = singleDerivationInventory "package" false;
       };
 
       ociImagesSchema = {
@@ -165,6 +198,17 @@
         appendSystem = true;
         defaultAttrPath = [ "default" ];
         inventory = self.lib.derivationsInventory "development environment" false;
+      };
+
+      devShellSchema = {
+        version = 1;
+        doc = ''
+          **DEPRECATED**. Use `devShells.<system>.default` instead.
+        '';
+        roles.nix-develop = { };
+        appendSystem = true;
+        defaultAttrPath = [ ];
+        inventory = singleDerivationInventory "development environment" false;
       };
 
       formatterSchema = {
@@ -410,13 +454,9 @@
           self.lib.mkChildren (
             builtins.mapAttrs (systemType: packagesForSystem: {
               forSystems = [ systemType ];
-              children = builtins.mapAttrs (packageName: package: {
-                forSystems = [ systemType ];
-                shortDescription = package.meta.description or "";
-                derivationAttrPath = [ ];
-                inherit what;
-                isFlakeCheck = isFlakeCheck;
-              }) packagesForSystem;
+              children = builtins.mapAttrs (
+                packageName: mkPackage isFlakeCheck what systemType
+              ) packagesForSystem;
             }) output
           );
       };
@@ -424,10 +464,13 @@
       # FIXME: distinguish between available and active schemas?
       schemas.schemas = schemasSchema;
       schemas.apps = appsSchema;
+      schemas.defaultApp = defaultAppSchema;
       schemas.packages = packagesSchema;
+      schemas.defaultPackage = defaultPackageSchema;
       schemas.legacyPackages = legacyPackagesSchema;
       schemas.checks = checksSchema;
       schemas.devShells = devShellsSchema;
+      schemas.devShell = devShellSchema;
       schemas.formatter = formatterSchema;
       schemas.templates = templatesSchema;
       schemas.hydraJobs = hydraJobsSchema;
