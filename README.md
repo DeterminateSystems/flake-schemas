@@ -6,11 +6,13 @@ This [Nix flake][flakes] provides a set of schema definitions for commonly used 
 The currently covered output types:
 
 * [`apps`][apps]
+* [`aspects`][aspects]
 * [`bundlers`][bundlers]
 * [`checks`][checks]
 * [`darwinConfigurations`][darwin]
 * [`darwinModules`][darwin]
 * [`devShells`][develop]
+* [`flakeModules`][flake-parts]
 * [`formatter`][formatter]
 * [`homeConfigurations`][home]
 * [`homeModules`][home]
@@ -39,11 +41,13 @@ nix develop ./tests -c treefmt
 ```
 
 [apps]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-run#apps
+[aspects]: https://github.com/vic/flake-aspects
 [bundlers]: https://github.com/nix-community/nix-bundle
 [checks]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-check.html
 [darwin]: https://github.com/nix-darwin/nix-darwin
 [det-nix]: https://docs.determinate.systems/determinate-nix
 [develop]: https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-develop.html
+[flake-parts]: https://flake.parts
 [flakes]: https://zero-to-nix.com/concepts/flakes
 [formatter]: https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-fmt
 [home]: https://github.com/nix-community/home-manager
