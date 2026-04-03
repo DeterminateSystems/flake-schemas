@@ -137,6 +137,7 @@
         roles.nix-build = { };
         roles.nix-run = { };
         roles.nix-search = { };
+        roles.nix-develop = { };
         appendSystem = true;
         inventory =
           output:
