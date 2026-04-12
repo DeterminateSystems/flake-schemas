@@ -41,8 +41,9 @@
         what: isFlakeCheck: output:
         self.lib.mkChildren (builtins.mapAttrs (mkPackage isFlakeCheck what) output);
 
-      schemasSchema = version: doc: {
-        inherit version doc;
+      schemasSchema = doc: {
+        version = 1;
+        inherit doc;
         inventory =
           output:
           self.lib.mkChildren (
@@ -459,11 +460,11 @@
       };
 
       exportedSchemas = {
-        schemas = schemasSchema 1 ''
+        schemas = schemasSchema ''
           The `schemas` flake output is used to define and document flake outputs.
           For the expected format, consult the Nix manual.
         '';
-        exportedSchemas = schemasSchema 1 ''
+        exportedSchemas = schemasSchema ''
           The `exportedSchemas` flake output is used to define flake schemas that you
           intend for other flakes to use.
         '';
