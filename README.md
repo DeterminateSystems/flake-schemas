@@ -8,6 +8,9 @@ This [Nix flake][flakes] provides a set of schema definitions for commonly used 
 [Determinate Nix][det-nix] uses these schemas by default for flakes that do not have their own `schemas` output.
 
 Schemas determine what is shown when you run commands like [`nix flake show`][nix-flake-show].
+
+## Provided schemas
+
 The schemas in this repo currently cover these output types:
 
 * [`apps`][apps]
@@ -50,9 +53,9 @@ This output is available because the flake provides a [dedicated schema][diskima
 ## Using flake schemas
 
 If a given flake has no `schemas` output, [Determinate Nix][det-nix] uses the schemas in this repo as its [defaults][builtin-schemas].
+That means that any outputs that conform to the schemas [provided here](#provided-schemas) are covered (`devShells`, `packages`, `check`, etc.).
 
-if a given flake *does* have a `schemas` output, [Determinate Nix][det-nix] uses that to determine the structure of the flake's outputs.
-
+If a given flake *does* have a `schemas` output, [Determinate Nix][det-nix] uses that to determine the structure of the flake's outputs.
 What that means is that if you want non-default schemas&mdash;as in, schemas that aren't built into Determinate Nix&mdash;you need to declare your own `schemas` output.
 Here's an example of a flake that extends the schemas in this repo:
 
@@ -121,12 +124,14 @@ You can also define schemas without involving the schemas in this repo:
   outputs =
     { self, ... }@inputs:
     {
-      inherit (nputs.other-flake) schemas;
+      inherit (inputs.other-flake) schemas;
 
       # other outputs
     };
 }
 ```
+
+But be aware that when you do that, common schemas like `devShells`, `packages`, and others aren't available *unless* the flake from which you're inheriting schemas provides those.
 
 ## Development
 
