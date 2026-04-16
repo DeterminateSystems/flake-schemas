@@ -83,14 +83,12 @@ You can extend that with one of your own custom schemas, for example:
     myOutputs = {
       version = 1;
       doc = "The `myOutputs` flake output.";
-      inventory =
-        output:
-        mkChildren (
-          builtins.mapAttrs (system: value: {
-            forSystems = [ system ];
-            what = "my output";
-          }) output
-        );
+      inventory = output: {
+        children = builtins.mapAttrs (system: value: {
+          forSystems = [ system ];
+          what = "my output";
+        }) output;
+      };
     };
   };
 }
