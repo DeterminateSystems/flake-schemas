@@ -161,9 +161,9 @@ nix develop ./tests -c treefmt
 [legacy]: https://github.com/NixOS/nixpkgs/blob/d1eaf1acfce382f14d26d20e0a9342884f3127b0/flake.nix#L47-L56
 [nix-flake-show]: https://manual.determinate.systems/command-ref/new-cli/nix3-flake-show.html
 [nixos]: https://github.com/NixOS/nixpkgs/tree/master/nixos
-[nixosmodules]: https://nixos.wiki/wiki/NixOS_modules
+[nixosmodules]: https://wiki.nixos.org/wiki/NixOS_Modules
 [oci]: https://opencontainers.org
-[overlays]: https://nixos.wiki/wiki/Overlays
+[overlays]: https://wiki.nixos.org/wiki/Overlays
 [packages]: https://search.nixos.org/packages
 [post]: https://determinate.systems/blog/introducing-flake-schemas
 [templates]: https://manual.determinate.systems/command-ref/new-cli/nix3-flake-init.html
